@@ -79,6 +79,18 @@ textarea{font:inherit;color:var(--ink);height:140px;border:1.5px solid var(--ink
 .vb button{pointer-events:auto;font:inherit;font-size:16px;padding:8px 16px;border-radius:10px;border:1.5px solid #fff8;background:#0008;color:#fff}
 #vd{color:#ff9a94!important}
 .nt{font-style:normal;font-size:15px;flex:none;padding:2px 6px;margin:-2px 0;opacity:.85}
+body.lock #bar,body.lock #tl,body.lock #sw,body.lock #sv{pointer-events:none;opacity:.5}
+#fl{position:fixed;z-index:36;width:clamp(300px,48vw,720px);height:clamp(280px,56vh,560px);display:flex;flex-direction:column;background:var(--paper);border:1.5px solid var(--ink);border-radius:12px;box-shadow:0 6px 24px #0005;overflow:hidden}
+#fl[hidden]{display:none}
+#flh{flex:none;height:42px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 6px 0 12px;background:#f1ecd6;border-bottom:1px solid #cfc8a8;touch-action:none;cursor:grab}
+#flh b{font-weight:normal;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none}
+#flx{flex:none;width:34px;height:34px;padding:0;font:inherit;font-size:24px;line-height:1;color:var(--ink);background:#fffdf3;border:1.5px solid var(--ink);border-radius:8px}
+#fltx{flex:0 0 38%;overflow-y:auto;padding:10px 14px;font-size:18px;line-height:1.6;white-space:pre-wrap;touch-action:pan-y;-webkit-user-select:text;user-select:text;border-bottom:1px solid #cfc8a8}
+#flim{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none;background:#fffdf3}
+#fli{max-width:100%;max-height:100%;transform-origin:center;pointer-events:none;-webkit-user-drag:none}
+#flim button{position:absolute;top:50%;margin-top:-20px;width:40px;height:40px;padding:0;font:inherit;font-size:26px;line-height:1;color:var(--ink);background:#fffdf3cc;border:1.5px solid var(--ink);border-radius:20px}
+#flp{left:6px}#fln{right:6px}
+#flc{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font-size:14px;padding:1px 10px;border-radius:10px;background:#fffdf3cc;pointer-events:none}
 #toast{position:fixed;right:8px;top:calc(56px + env(safe-area-inset-top));z-index:50;max-width:70vw;padding:6px 12px;font-size:15px;background:var(--ink);color:#fff;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s}
 #toast.on{opacity:1}
 #tl button{width:40px;height:40px;display:flex;align-items:center;justify-content:center;font:inherit;font-size:26px;line-height:1;padding:0;color:var(--ink);background:#fffdf3;border:1.5px solid var(--ink);border-radius:10px}
@@ -118,6 +130,7 @@ textarea{font:inherit;color:var(--ink);height:140px;border:1.5px solid var(--ink
 <textarea id="ntxt" placeholder="备注…"></textarea>
 <button id="ntadd">＋ 添加图片（也可粘贴）</button><div id="ntg"></div></div></div>
 <div id="ask" hidden><div><p id="askt"></p><small>压缩：最长边缩到 1600px，通常每张 100~300KB。<br>保留原图：占用空间大，图多时保存和导出会变慢。</small><button id="aky">压缩（推荐）</button><button id="akn">保留原图</button><button id="akc">取消</button></div></div>
+<div id="fl" hidden><div id="flh"><b id="flt"></b><button id="flx" aria-label="关闭">×</button></div><div id="fltx"></div><div id="flim"><img id="fli"><button id="flp">‹</button><button id="fln">›</button><span id="flc"></span></div></div>
 <div id="vw" hidden><img id="vi"><div class="vb"><button id="vc">关闭</button><button id="vd">删除</button></div></div>
 <script>
 const $=s=>document.querySelector(s),W=$('#world'),S=$('#stage'),D=$('#dlg'),K='mm2';
@@ -201,6 +214,7 @@ addEventListener('keydown',e=>{
  if(!D.hidden){if(e.key==='Escape'){D.hidden=true;rn=null}else if(e.key==='Enter'&&(e.ctrlKey||e.metaKey))$('#ok').click();return}
  if($('#drawer').classList.contains('on')){if(e.key==='Escape')drawer(false);return}
  if(!$('#cfg').hidden){if(e.key==='Escape')$('#cfg').hidden=true;return}
+ if(!$('#fl').hidden){if(e.key==='Escape')closeFloat();return}
  if(!$('#nt').hidden){if(e.key==='Escape'){if(!$('#vw').hidden)closeViewer();else closeNote()}return}
  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
  const m=e.ctrlKey||e.metaKey,k=e.key;
@@ -222,6 +236,7 @@ function moveDrag(e){
 function drop(id){const t=tgt;endDrag();if(!t)return;
  mut(()=>{const r=find(id);r.p.k.splice(r.i,1);if(t.z==='in'){const d=find(t.id).n;d.c=false;d.k.push(r.n)}else{const d=find(t.id);d.p.k.splice(d.i+(t.z==='dn'?1:0),0,r.n)}})}
 S.addEventListener('pointerdown',e=>{
+ if(!$('#fl').hidden)return;
  P.set(e.pointerId,{x:e.clientX,y:e.clientY});
  if(P.size===2){clearTimeout(tm);endDrag();const[a,b]=[...P.values()];M={m:'pinch',d:Math.hypot(a.x-b.x,a.y-b.y),V:{...V},c:{x:(a.x+b.x)/2,y:(a.y+b.y)/2}};return}
  if(P.size>2)return;
@@ -242,12 +257,12 @@ const up=e=>{
  if(m.m==='pinch')return;
  if(m.m==='drag'){drop(m.id);return}
  if(m.m==='press'){
-  if(m.nt){sel=m.id;openNote(m.id)}else if(m.dot){const r=find(m.id);if(forced.has(m.id)&&r.n.c)forced.delete(m.id);else r.n.c=!r.n.c;save()}
+  if(m.nt){openFloat(m.id)}else if(m.dot){const r=find(m.id);if(forced.has(m.id)&&r.n.c)forced.delete(m.id);else r.n.c=!r.n.c;save()}
   else{const now=Date.now();if(lt.id===m.id&&now-lt.t<350){lt={id:null,t:0};sel=m.id;render();edit();return}lt={id:m.id,t:now};sel=m.id;if(mask&&m.l.classList.contains('leaf'))rev.has(m.id)?rev.delete(m.id):rev.add(m.id)}
   render()}
  else if(!m.moved&&!m.l){sel=null;render()}};
 addEventListener('pointerup',up);addEventListener('pointercancel',up);
-S.addEventListener('wheel',e=>{e.preventDefault();
+S.addEventListener('wheel',e=>{e.preventDefault();if(!$('#fl').hidden)return;
  const k=Math.min(3,Math.max(.2,V.k*Math.exp(-e.deltaY*.0015))),wx=(e.clientX-V.x)/V.k,wy=(e.clientY-V.y)/V.k;
  V={k,x:e.clientX-wx*k,y:e.clientY-wy*k};apply()},{passive:false});
 /* 历史导图：抽屉、切换、长按面板 */
@@ -377,5 +392,50 @@ $('#file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)
    switchTo(tgt);return}
   if(!o.k)throw 0;const m=mk('');m.root=o;DB.maps.push(m);switchTo(m.id)}catch(err){alert('文件格式不对')}};
 if(DBOK)setTimeout(async()=>{try{const used=new Set(imgIds(DB.maps));for(const k of await iop('keys'))if(!used.has(k))await iop('del',k)}catch(e){}},3000);
+
+/* 备注悬浮窗（只读、可拖动、背景锁定） */
+function zoomable(box,img){
+ let T={x:0,y:0,k:1},P=new Map(),m=null,last=0;
+ const ap=()=>{img.style.transform='translate('+T.x+'px,'+T.y+'px) scale('+T.k+')'};
+ const C=()=>{const r=box.getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height/2}};
+ const mid=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
+ box.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;try{box.setPointerCapture(e.pointerId)}catch(x){}P.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(P.size===2){const[a,b]=[...P.values()];m={m:'p',d:Math.hypot(a.x-b.x,a.y-b.y)||1,T:{...T},c:mid(a,b)}}
+  else if(P.size===1)m={m:'d',x:e.clientX,y:e.clientY,T:{...T},mv:false}});
+ box.addEventListener('pointermove',e=>{if(!P.has(e.pointerId)||!m)return;P.set(e.pointerId,{x:e.clientX,y:e.clientY});const c0=C();
+  if(m.m==='p'){const[a,b]=[...P.values()];if(!b)return;const k=Math.min(8,Math.max(1,m.T.k*Math.hypot(a.x-b.x,a.y-b.y)/m.d)),c=mid(a,b),wx=(m.c.x-c0.x-m.T.x)/m.T.k,wy=(m.c.y-c0.y-m.T.y)/m.T.k;T={k,x:c.x-c0.x-wx*k,y:c.y-c0.y-wy*k};ap()}
+  else{const dx=e.clientX-m.x,dy=e.clientY-m.y;if(Math.hypot(dx,dy)>6)m.mv=true;if(m.mv){T={...T,x:m.T.x+dx,y:m.T.y+dy};ap()}}});
+ const up=e=>{if(!P.delete(e.pointerId))return;
+  if(!P.size){if(m&&m.m==='d'&&!m.mv){const t=Date.now();if(t-last<300){T=T.k>1.05?{x:0,y:0,k:1}:{x:0,y:0,k:2.5};ap();last=0}else last=t}m=null}
+  else if(P.size===1){const q=[...P.values()][0];m={m:'d',x:q.x,y:q.y,T:{...T},mv:true}}};
+ box.addEventListener('pointerup',up);box.addEventListener('pointercancel',up);
+ box.addEventListener('wheel',e=>{e.preventDefault();const c0=C(),k=Math.min(8,Math.max(1,T.k*Math.exp(-e.deltaY*.0015))),wx=(e.clientX-c0.x-T.x)/T.k,wy=(e.clientY-c0.y-T.y)/T.k;T=k===1?{x:0,y:0,k:1}:{k,x:e.clientX-c0.x-wx*k,y:e.clientY-c0.y-wy*k};ap()},{passive:false});
+ return{reset(){T={x:0,y:0,k:1};P.clear();m=null;ap()}}}
+const FL=$('#fl'),FZ=zoomable($('#flim'),$('#fli'));
+let flId=null,flImgs=[],flI=0,flUrl=null,flTok=0,flPos=null;
+function flClamp(){const r=FL.getBoundingClientRect();let x=flPos?flPos.x:innerWidth-r.width-12,y=flPos?flPos.y:64;
+ x=Math.min(Math.max(0,x),Math.max(0,innerWidth-r.width));y=Math.min(Math.max(0,y),Math.max(0,innerHeight-r.height));flPos={x,y};FL.style.left=x+'px';FL.style.top=y+'px'}
+async function openFloat(id){const r=find(id);if(!r)return;const n=r.n,im=n.imgs||[];if(!n.note&&!im.length)return;
+ flId=id;flImgs=im;flI=0;$('#flt').textContent=(n.t||'').split('\n')[0]||'备注';
+ const tx=$('#fltx');tx.textContent=n.note||'';tx.scrollTop=0;tx.style.display=n.note?'':'none';tx.style.flex=im.length?'0 0 38%':'1';
+ $('#flim').style.display=im.length?'':'none';
+ FL.hidden=false;document.body.classList.add('lock');flClamp();flShow()}
+async function flShow(){if(!flImgs.length)return;const id=flImgs[flI],tok=++flTok;
+ $('#flc').textContent=(flI+1)+'/'+flImgs.length;$('#flp').style.display=$('#fln').style.display=flImgs.length>1?'':'none';
+ let rec=null;try{rec=await iop('get',id)}catch(e){}
+ if(tok!==flTok||flId===null)return;
+ if(flUrl){URL.revokeObjectURL(flUrl);flUrl=null}
+ FZ.reset();if(!rec){$('#fli').removeAttribute('src');$('#flc').textContent='图片丢失 '+(flI+1)+'/'+flImgs.length;return}
+ flUrl=URL.createObjectURL(rec.b);$('#fli').src=flUrl}
+function closeFloat(){FL.hidden=true;document.body.classList.remove('lock');flId=null;flTok++;$('#fli').removeAttribute('src');if(flUrl){URL.revokeObjectURL(flUrl);flUrl=null}}
+$('#flx').onclick=closeFloat;
+$('#flp').onclick=()=>{flI=(flI-1+flImgs.length)%flImgs.length;flShow()};
+$('#fln').onclick=()=>{flI=(flI+1)%flImgs.length;flShow()};
+let fd=null;const FH_=$('#flh');
+FH_.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;const r=FL.getBoundingClientRect();fd={dx:e.clientX-r.left,dy:e.clientY-r.top};try{FH_.setPointerCapture(e.pointerId)}catch(x){}FH_.style.cursor='grabbing'});
+FH_.addEventListener('pointermove',e=>{if(!fd)return;flPos={x:e.clientX-fd.dx,y:e.clientY-fd.dy};flClamp()});
+const fup=()=>{fd=null;FH_.style.cursor=''};FH_.addEventListener('pointerup',fup);FH_.addEventListener('pointercancel',fup);
+addEventListener('resize',()=>{if(!FL.hidden)flClamp()});
+S.addEventListener('click',e=>{if(FL.hidden)return;const t=e.target;if(t.classList&&t.classList.contains('nt')){const n=t.closest('.n');if(n)openFloat(n.dataset.id)}});
 let lw=innerWidth;render();fit();addEventListener('resize',()=>{if(innerWidth!==lw){lw=innerWidth;if(D.hidden)fit()}});
 </script></body></html>
