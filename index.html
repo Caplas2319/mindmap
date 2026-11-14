@@ -111,6 +111,10 @@ body.lock #bar,body.lock #tl,body.lock #sw,body.lock #sv{pointer-events:none;opa
 #stt{opacity:.7;padding:2px 4px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #sheet button{font:inherit;font-size:18px;padding:14px;text-align:left;color:var(--ink);background:#fffdf3;border:1.5px solid var(--ink);border-radius:10px}
 #rm{color:#b3261e!important;border-color:#b3261e!important}
+.it{align-items:center}.it span{flex:1;min-width:0}.hd{flex:none;font-weight:normal;font-size:22px;line-height:1;padding:12px 4px 12px 12px;margin:-12px -10px -12px 0;opacity:.55;touch-action:none;cursor:grab}.it.ru{box-shadow:inset 0 3px 0 #d33}.it.rd{box-shadow:inset 0 -3px 0 #d33}
+.th{position:relative;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}.th img{display:block;pointer-events:none}.th b{position:absolute;left:4px;top:4px;min-width:22px;height:22px;line-height:22px;padding:0 5px;text-align:center;font-size:13px;font-weight:normal;color:#fff;background:var(--ink);border-radius:11px;pointer-events:none}.th.dt{outline:3px solid #d33;outline-offset:-3px;border-radius:8px}
+#flim #flz{top:6px;right:6px;left:auto;margin-top:0;width:34px;height:34px;border-radius:8px;z-index:2;display:flex;align-items:center;justify-content:center}
+.nh b{flex:1;min-width:0}#nt.fs #ntxt{max-height:none;flex:1;min-height:0}#nt.fs #ntadd,#nt.fs #ntg{display:none}
 </style></head><body>
 <div id="stage"><div id="world"></div></div>
 <div id="tl"><button id="menu" aria-label="历史导图"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><button id="new" aria-label="新建导图">＋</button></div>
@@ -126,11 +130,11 @@ body.lock #bar,body.lock #tl,body.lock #sw,body.lock #sv{pointer-events:none;opa
 <div id="dlg" hidden><div><textarea></textarea><div class="r"><button id="no">取消</button><button id="ok">确定</button></div></div></div>
 <input type="file" id="file" accept=".json" hidden>
 <input type="file" id="ntf" accept="image/*" multiple hidden>
-<div id="nt" hidden><div class="np"><div class="nh"><b id="nttl"></b><button id="ntx">完成</button></div>
+<div id="nt" hidden><div class="np"><div class="nh"><b id="nttl"></b><button id="ntfs">全屏文字</button><button id="ntx">完成</button></div>
 <textarea id="ntxt" placeholder="备注…"></textarea>
 <button id="ntadd">＋ 添加图片（也可粘贴）</button><div id="ntg"></div></div></div>
 <div id="ask" hidden><div><p id="askt"></p><small>压缩：最长边缩到 1600px，通常每张 100~300KB。<br>保留原图：占用空间大，图多时保存和导出会变慢。</small><button id="aky">压缩（推荐）</button><button id="akn">保留原图</button><button id="akc">取消</button></div></div>
-<div id="fl" hidden><div id="flh"><b id="flt"></b><button id="flx" aria-label="关闭">×</button></div><div id="fltx"></div><div id="flim"><img id="fli"><button id="flp">‹</button><button id="fln">›</button><span id="flc"></span></div></div>
+<div id="fl" hidden><div id="flh"><b id="flt"></b><button id="flx" aria-label="关闭">×</button></div><div id="fltx"></div><div id="flim"><img id="fli"><button id="flz"></button><button id="flp">‹</button><button id="fln">›</button><span id="flc"></span></div></div>
 <div id="vw" hidden><img id="vi"><div class="vb"><button id="vc">关闭</button><button id="vd">删除</button></div></div>
 <script>
 const $=s=>document.querySelector(s),W=$('#world'),S=$('#stage'),D=$('#dlg'),K='mm2';
@@ -268,9 +272,9 @@ S.addEventListener('wheel',e=>{e.preventDefault();if(!$('#fl').hidden)return;
 /* 历史导图：抽屉、切换、长按面板 */
 let rn=null,shId=null;
 const drawer=on=>{$('#drawer').classList.toggle('on',on);$('#scrim').classList.toggle('on',on)};
-function listRender(){$('#list').replaceChildren(...[...DB.maps].sort((a,b)=>b.ts-a.ts).map(m=>{const d=document.createElement('div'),s=document.createElement('span'),c=document.createElement('small');d.className='it'+(m===cm?' cur':'');d.dataset.id=m.id;s.textContent=nm(m);c.textContent=(cnt(m.root)+1)+' 节点';d.append(s,c);return d}))}
+function listRender(){$('#list').replaceChildren(...DB.maps.map(m=>{const h=document.createElement('b');h.className='hd';h.textContent='≡';const d=document.createElement('div'),s=document.createElement('span'),c=document.createElement('small');d.className='it'+(m===cm?' cur':'');d.dataset.id=m.id;s.textContent=nm(m);c.textContent=(cnt(m.root)+1)+' 节点';d.append(s,c,h);return d}))}
 function switchTo(id,keep){const m=DB.maps.find(x=>x.id===id);if(!m)return;cm=m;DB.cur=id;root=m.root;sel=null;hist=[];redo=[];rev.clear();$('#q').value='';hits=[];hitSet=new Set();forced=new Set();nowId=null;hi=-1;qui();save();render();fit();if(!keep)drawer(false)}
-function newMap(){const m=mk('新导图');DB.maps.push(m);switchTo(m.id);sel=root.id;render();edit()}
+function newMap(){const m=mk('新导图');DB.maps.unshift(m);switchTo(m.id);sel=root.id;render();edit()}
 function delMap(id){const m=DB.maps.find(x=>x.id===id);if(!m||!confirm('删除「'+nm(m)+'」？'))return;
  DB.maps=DB.maps.filter(x=>x!==m);if(!DB.maps.length)DB.maps.push(mk('新导图'));
  if(m===cm)switchTo([...DB.maps].sort((a,b)=>b.ts-a.ts)[0].id,true);else{save();listRender()}}
@@ -281,17 +285,28 @@ $('#scrim').onclick=()=>drawer(false);$('#scrim2').onclick=closeSheet;
 $('#rn').onclick=()=>{const m=DB.maps.find(x=>x.id===shId);closeSheet();if(!m)return;rn=m.id;const t=$('#dlg textarea');t.value=nm(m);D.hidden=false;t.focus();t.select()};
 $('#rm').onclick=()=>{closeSheet();delMap(shId)};
 const L=$('#list');let lp=0,lpf=false,lx=0,ly=0;
-L.addEventListener('pointerdown',e=>{const it=e.target.closest('.it');if(!it)return;lpf=false;lx=e.clientX;ly=e.clientY;clearTimeout(lp);lp=setTimeout(()=>{lpf=true;openSheet(it.dataset.id)},500)});
+L.addEventListener('pointerdown',e=>{if(e.target.closest('.hd'))return;const it=e.target.closest('.it');if(!it)return;lpf=false;lx=e.clientX;ly=e.clientY;clearTimeout(lp);lp=setTimeout(()=>{lpf=true;openSheet(it.dataset.id)},500)});
 L.addEventListener('pointermove',e=>{if(Math.hypot(e.clientX-lx,e.clientY-ly)>8)clearTimeout(lp)});
-L.addEventListener('pointerup',e=>{clearTimeout(lp);const it=e.target.closest('.it');if(it&&!lpf&&Math.hypot(e.clientX-lx,e.clientY-ly)<=8)switchTo(it.dataset.id)});
+L.addEventListener('pointerup',e=>{clearTimeout(lp);if(e.target.closest('.hd'))return;const it=e.target.closest('.it');if(it&&!lpf&&Math.hypot(e.clientX-lx,e.clientY-ly)<=8)switchTo(it.dataset.id)});
 L.addEventListener('pointercancel',()=>clearTimeout(lp));
-L.addEventListener('contextmenu',e=>{e.preventDefault();clearTimeout(lp);const it=e.target.closest('.it');if(it){lpf=true;openSheet(it.dataset.id)}});
+L.addEventListener('contextmenu',e=>{e.preventDefault();if(e.target.closest('.hd'))return;clearTimeout(lp);const it=e.target.closest('.it');if(it){lpf=true;openSheet(it.dataset.id)}});
 
+let ld=null;
+const clrD=()=>L.querySelectorAll('.ru,.rd').forEach(x=>x.classList.remove('ru','rd'));
+L.addEventListener('pointerdown',e=>{const h=e.target.closest('.hd');if(!h)return;const it=h.parentNode;ld={id:it.dataset.id,el:it,t:null};it.style.opacity='.5';try{h.setPointerCapture(e.pointerId)}catch(x){}});
+L.addEventListener('pointermove',e=>{if(!ld)return;clrD();ld.t=null;
+ const t=document.elementFromPoint(e.clientX,e.clientY),it=t&&t.closest&&t.closest('.it');
+ if(it&&it!==ld.el){const rc=it.getBoundingClientRect(),after=e.clientY>rc.top+rc.height/2;ld.t={id:it.dataset.id,after};it.classList.add(after?'rd':'ru')}
+ const r=L.getBoundingClientRect();if(e.clientY<r.top+36)L.scrollTop-=10;else if(e.clientY>r.bottom-36)L.scrollTop+=10});
+const endLd=e=>{if(!ld)return;const d=ld;ld=null;d.el.style.opacity='';clrD();
+ if(e.type==='pointerup'&&d.t){const a=DB.maps.findIndex(x=>x.id===d.id);if(a>=0){const m=DB.maps.splice(a,1)[0];let b=DB.maps.findIndex(x=>x.id===d.t.id);if(b<0)b=DB.maps.length;else if(d.t.after)b++;DB.maps.splice(b,0,m);save()}}
+ listRender()};
+L.addEventListener('pointerup',endLd);L.addEventListener('pointercancel',endLd);
 /* 搜索 */
 function qui(){const v=$('#q').value;$('#qc').textContent=v.trim()?(hits.length?(hi+1)+'/'+hits.length+' ›':'无'):'';$('#qx').style.display=v?'flex':'none'}
 function center(id){const l=W.querySelector('.n[data-id="'+id+'"]>.lab');if(!l)return;const r=l.getBoundingClientRect(),s=S.getBoundingClientRect();V={...V,x:V.x+(s.left+s.width/2-(r.left+r.width/2)),y:V.y+(s.top+s.height/2-(r.top+r.height/2))};apply()}
 function doSearch(){const q=$('#q').value.trim().toLowerCase();hits=[];forced=new Set();hi=-1;nowId=null;
- if(q){const walk=(n,a)=>{if((n.t||'').toLowerCase().includes(q)){hits.push(n.id);a.forEach(x=>forced.add(x.id))}n.k.forEach(c=>walk(c,a.concat(n)))};walk(root,[]);if(hits.length){hi=0;nowId=hits[0];sel=null}}
+ if(q){const walk=(n,a)=>{if(((n.t||'')+'\n'+(n.note||'')).toLowerCase().includes(q)){hits.push(n.id);a.forEach(x=>forced.add(x.id))}n.k.forEach(c=>walk(c,a.concat(n)))};walk(root,[]);if(hits.length){hi=0;nowId=hits[0];sel=null}}
  hitSet=new Set(hits);render();if(nowId)center(nowId);qui()}
 function nextHit(){if(!hits.length)return;hi=(hi+1)%hits.length;nowId=hits[hi];render();center(nowId);qui()}
 $('#q').addEventListener('input',doSearch);
@@ -337,17 +352,36 @@ async function makeImg(f,zip){const bm=await decodeImg(f),w=bm.width||bm.natural
  if(bm.close)bm.close();return{b,t}}
 const askC=n=>new Promise(res=>{$('#askt').textContent='插入 '+n+' 张图片，是否压缩？';$('#ask').hidden=false;const done=v=>{$('#ask').hidden=true;res(v)};$('#aky').onclick=()=>done('y');$('#akn').onclick=()=>done('n');$('#akc').onclick=()=>done(null)});
 let ntId=null,ntSnap='',ntOld='',ntUrls=[],ntt=0;
-function openNote(id){const r=find(id);if(!r)return;ntId=id;ntSnap=JSON.stringify(root);ntOld=r.n.note||'';$('#nttl').textContent=(r.n.t||'').split('\n')[0]||'备注';$('#ntxt').value=ntOld;$('#nt').hidden=false;ntGrid()}
+function openNote(id){const r=find(id);if(!r)return;ntId=id;ntSnap=JSON.stringify(root);ntOld=r.n.note||'';$('#nttl').textContent=(r.n.t||'').split('\n')[0]||'备注';$('#ntxt').value=ntOld;$('#nt').hidden=false;ntFs(false);ntGrid()}
 function closeNote(){if(!ntId)return;if(!$('#vw').hidden)closeViewer();clearTimeout(ntt);const r=find(ntId);
  if(r&&(r.n.note||'')!==ntOld){hist.push(ntSnap);if(hist.length>100)hist.shift();redo=[]}
- save();ntUrls.forEach(u=>URL.revokeObjectURL(u));ntUrls=[];$('#ntg').replaceChildren();$('#nt').hidden=true;ntId=null;render()}
+ save();ntUrls.forEach(u=>URL.revokeObjectURL(u));ntUrls=[];$('#ntg').replaceChildren();$('#nt').hidden=true;ntFs(false);ntId=null;render()}
 async function ntGrid(){const g=$('#ntg');ntUrls.forEach(u=>URL.revokeObjectURL(u));ntUrls=[];g.replaceChildren();const r=find(ntId);if(!r)return;const my=ntId;
- for(const id of r.n.imgs||[]){const im=document.createElement('img');im.onclick=()=>openViewer(id);g.append(im);
+ for(const [ix,id] of (r.n.imgs||[]).entries()){const th=document.createElement('div'),im=document.createElement('img'),bd=document.createElement('b');th.className='th';th.dataset.id=id;bd.textContent=ix+1;th.append(im,bd);g.append(th);
   iop('get',id).then(rec=>{if(ntId!==my)return;if(!rec){im.alt='图片丢失';return}const u=URL.createObjectURL(rec.t||rec.b);ntUrls.push(u);im.src=u}).catch(()=>{})}}
 async function addImgs(files){if(!find(ntId))return;const c=await askC(files.length);if(!c)return;const ids=[];
  for(const f of files){try{const x=await makeImg(f,c==='y'),id='i'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);await iop('put',id,x);ids.push(id)}catch(e){toast('有图片无法读取或存储')}}
  const r=find(ntId);if(!ids.length||!r)return;mut(()=>{r.n.imgs=(r.n.imgs||[]).concat(ids)});ntGrid()}
+(()=>{const G=$('#ntg');let c=null,gh2=null;
+ const clr2=()=>G.querySelectorAll('.dt').forEach(x=>x.classList.remove('dt'));
+ G.addEventListener('contextmenu',e=>e.preventDefault());
+ G.addEventListener('touchmove',e=>{if(c&&c.drag)e.preventDefault()},{passive:false});
+ G.addEventListener('pointerdown',e=>{const th=e.target.closest('.th');if(!th)return;c={th,x:e.clientX,y:e.clientY,drag:false,moved:false,o:null};try{G.setPointerCapture(e.pointerId)}catch(x){}
+  const k=c;k.t=setTimeout(()=>{if(c!==k)return;k.drag=true;th.style.opacity='.35';const im=th.querySelector('img');gh2=im.cloneNode();gh2.style.cssText='position:fixed;pointer-events:none;opacity:.85;z-index:60;border-radius:8px;width:'+th.offsetWidth+'px;height:'+th.offsetHeight+'px;left:'+(k.x-th.offsetWidth/2)+'px;top:'+(k.y-th.offsetHeight/2)+'px';document.body.append(gh2);if(navigator.vibrate)navigator.vibrate(15)},380)});
+ G.addEventListener('pointermove',e=>{if(!c)return;
+  if(!c.drag){if(Math.hypot(e.clientX-c.x,e.clientY-c.y)>8){clearTimeout(c.t);c.moved=true}return}
+  gh2.style.left=(e.clientX-gh2.offsetWidth/2)+'px';gh2.style.top=(e.clientY-gh2.offsetHeight/2)+'px';clr2();c.o=null;
+  const t=document.elementFromPoint(e.clientX,e.clientY),o=t&&t.closest&&t.closest('#ntg .th');
+  if(o&&o!==c.th){o.classList.add('dt');c.o=o}
+  const r=G.getBoundingClientRect();if(e.clientY<r.top+30)G.scrollTop-=10;else if(e.clientY>r.bottom-30)G.scrollTop+=10});
+ const end=e=>{if(!c)return;clearTimeout(c.t);const k=c;c=null;if(gh2){gh2.remove();gh2=null}k.th.style.opacity='';clr2();
+  if(k.drag){if(e.type==='pointerup'&&k.o){const ids=[...G.children].map(x=>x.dataset.id),a=ids.indexOf(k.th.dataset.id),b=ids.indexOf(k.o.dataset.id),r=find(ntId);
+    if(r&&a>=0&&b>=0){mut(()=>{const arr=(r.n.imgs||[]).slice(),m=arr.splice(a,1)[0];arr.splice(b,0,m);r.n.imgs=arr});ntGrid()}}return}
+  if(e.type==='pointerup'&&!k.moved)openViewer(k.th.dataset.id)};
+ G.addEventListener('pointerup',end);G.addEventListener('pointercancel',end)})();
 $('#ntxt').addEventListener('input',()=>{const r=find(ntId);if(!r)return;const v=$('#ntxt').value;if(v.trim())r.n.note=v;else delete r.n.note;clearTimeout(ntt);ntt=setTimeout(save,300)});
+function ntFs(on){$('#nt').classList.toggle('fs',on);$('#ntfs').textContent=on?'退出全屏':'全屏文字'}
+$('#ntfs').onclick=()=>ntFs(!$('#nt').classList.contains('fs'));
 $('#ntx').onclick=closeNote;
 $('#ntadd').onclick=()=>$('#ntf').click();
 $('#ntf').onchange=e=>{const fs=[...e.target.files];e.target.value='';if(fs.length)addImgs(fs)};
@@ -412,13 +446,17 @@ function zoomable(box,img){
  box.addEventListener('wheel',e=>{e.preventDefault();const c0=C(),k=Math.min(8,Math.max(1,T.k*Math.exp(-e.deltaY*.0015))),wx=(e.clientX-c0.x-T.x)/T.k,wy=(e.clientY-c0.y-T.y)/T.k;T=k===1?{x:0,y:0,k:1}:{k,x:e.clientX-c0.x-wx*k,y:e.clientY-c0.y-wy*k};ap()},{passive:false});
  return{reset(){T={x:0,y:0,k:1};P.clear();m=null;ap()}}}
 const FL=$('#fl'),FZ=zoomable($('#flim'),$('#fli'));
+let flBig=false;
+function flSetBig(){const r=flId&&find(flId),has=!!(r&&r.n.note),z=$('#flz');$('#fltx').style.display=has&&!flBig?'':'none';z.style.display=has?'':'none';
+ z.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="'+(flBig?'M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5':'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5')+'"/></svg>';
+ z.setAttribute('aria-label',flBig?'缩回':'扩大');FZ.reset()}
 let flId=null,flImgs=[],flI=0,flUrl=null,flTok=0,flPos=null;
 function flClamp(){const r=FL.getBoundingClientRect();let x=flPos?flPos.x:innerWidth-r.width-12,y=flPos?flPos.y:64;
  x=Math.min(Math.max(0,x),Math.max(0,innerWidth-r.width));y=Math.min(Math.max(0,y),Math.max(0,innerHeight-r.height));flPos={x,y};FL.style.left=x+'px';FL.style.top=y+'px'}
 async function openFloat(id){const r=find(id);if(!r)return;const n=r.n,im=n.imgs||[];if(!n.note&&!im.length)return;
  flId=id;flImgs=im;flI=0;$('#flt').textContent=(n.t||'').split('\n')[0]||'备注';
  const tx=$('#fltx');tx.textContent=n.note||'';tx.scrollTop=0;tx.style.display=n.note?'':'none';tx.style.flex=im.length?'0 0 38%':'1';
- $('#flim').style.display=im.length?'':'none';
+ $('#flim').style.display=im.length?'':'none';flBig=false;flSetBig();
  FL.hidden=false;document.body.classList.add('lock');flClamp();flShow()}
 async function flShow(){if(!flImgs.length)return;const id=flImgs[flI],tok=++flTok;
  $('#flc').textContent=(flI+1)+'/'+flImgs.length;$('#flp').style.display=$('#fln').style.display=flImgs.length>1?'':'none';
@@ -429,6 +467,7 @@ async function flShow(){if(!flImgs.length)return;const id=flImgs[flI],tok=++flTo
  flUrl=URL.createObjectURL(rec.b);$('#fli').src=flUrl}
 function closeFloat(){FL.hidden=true;document.body.classList.remove('lock');flId=null;flTok++;$('#fli').removeAttribute('src');if(flUrl){URL.revokeObjectURL(flUrl);flUrl=null}}
 $('#flx').onclick=closeFloat;
+$('#flz').onclick=()=>{flBig=!flBig;flSetBig()};
 $('#flp').onclick=()=>{flI=(flI-1+flImgs.length)%flImgs.length;flShow()};
 $('#fln').onclick=()=>{flI=(flI+1)%flImgs.length;flShow()};
 let fd=null;const FH_=$('#flh');
