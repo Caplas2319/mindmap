@@ -115,14 +115,21 @@ body.lock #bar,body.lock #tl,body.lock #sw,body.lock #sv{pointer-events:none;opa
 .th{position:relative;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}.th img{display:block;pointer-events:none}.th b{position:absolute;left:4px;top:4px;min-width:22px;height:22px;line-height:22px;padding:0 5px;text-align:center;font-size:13px;font-weight:normal;color:#fff;background:var(--ink);border-radius:11px;pointer-events:none}.th.dt{outline:3px solid #d33;outline-offset:-3px;border-radius:8px}
 #flim #flz{top:6px;right:6px;left:auto;margin-top:0;width:34px;height:34px;border-radius:8px;z-index:2;display:flex;align-items:center;justify-content:center}
 .nh b{flex:1;min-width:0}#nt.fs #ntxt{max-height:none;flex:1;min-height:0}#nt.fs #ntadd,#nt.fs #ntg{display:none}
+.fd{padding:12px 16px;border-bottom:1px solid #e6e0c6;background:#f1ecd6;display:flex;justify-content:space-between;gap:8px;-webkit-touch-callout:none}.fd small{opacity:.6;font-size:14px}.fd.rd{box-shadow:inset 0 -3px 0 #d33}.it.in{padding-left:32px}
+#drawer h2{display:flex;align-items:center;justify-content:space-between;gap:8px}#nf{font:inherit;font-size:14px;padding:4px 10px;color:var(--ink);background:#fffdf3;border:1.5px solid var(--ink);border-radius:8px}
+#mvp{position:fixed;inset:0;background:#0006;display:flex;align-items:center;justify-content:center;z-index:47}#mvp[hidden]{display:none}#mvp>div{background:var(--paper);padding:14px;border-radius:12px;width:min(420px,92vw);max-height:70vh;display:flex;flex-direction:column;gap:8px}#mvp h3{margin:0;font-size:18px;font-weight:normal}#mvl{overflow:auto;display:flex;flex-direction:column;gap:6px}#mvp button{font:inherit;font-size:16px;padding:10px;text-align:left;color:var(--ink);background:#fffdf3;border:1.5px solid var(--ink);border-radius:8px}
+.ms>.lab{background:#cfe6ff;border-color:#2f6fd0;border-style:dashed}.cna>.lab{outline:3px dashed #666;outline-offset:1px}
+#lk{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+#cm{position:fixed;z-index:60;background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;padding:4px;display:flex;flex-direction:column;box-shadow:0 4px 16px #0004}#cm[hidden]{display:none}#cm button{font:inherit;font-size:16px;padding:8px 18px;text-align:left;color:var(--ink);background:none;border:0}#cm button:active{background:#dbe4ff}
 </style></head><body>
 <div id="stage"><div id="world"></div></div>
 <div id="tl"><button id="menu" aria-label="历史导图"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><button id="new" aria-label="新建导图">＋</button></div>
 <button id="sv" aria-label="保存"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v5h7V3M8 21v-7h8v7"/></svg></button><div id="toast"></div>
 <div class="scrim" id="scrim"></div>
-<div id="drawer"><h2>历史导图</h2><div id="list"></div><p id="hint">点击切换，长按可重命名或删除</p></div>
+<div id="drawer"><h2><span>历史导图</span><button id="nf">＋文件夹</button></h2><div id="list"></div><p id="hint">点击切换，长按可重命名或删除</p></div>
 <div class="scrim" id="scrim2"></div>
-<div id="sheet"><div id="stt"></div><button id="rn">重命名</button><button id="rm">删除</button></div>
+<div id="sheet"><div id="stt"></div><button id="mvb">移动到文件夹</button><button id="rn">重命名</button><button id="rm">删除</button></div>
+<div id="mvp" hidden><div><h3>移动到文件夹</h3><div id="mvl"></div><button id="mvc">取消</button></div></div>
 <div id="bar"></div>
 <div id="sw"><input id="q" type="text" enterkeyhint="search" placeholder="搜索" autocomplete="off"><span id="qc"></span><b id="qx">×</b></div>
 <div id="pal" hidden></div>
@@ -140,13 +147,13 @@ body.lock #bar,body.lock #tl,body.lock #sw,body.lock #sv{pointer-events:none;opa
 const $=s=>document.querySelector(s),W=$('#world'),S=$('#stage'),D=$('#dlg'),K='mm2';
 let uid=0;const nid=()=>'n'+Date.now().toString(36)+(uid++);
 const T=(t,...k)=>({id:nid(),t,k,c:false});
-let sel=null,mask=false,rev=new Set(),hist=[],redo=[],V={x:10,y:10,k:1},hitSet=new Set(),forced=new Set(),nowId=null,hits=[],hi=-1;
+let boxMode=false,MS=new Set(),CB=null,mkSty=null,mkMode=false,cnMode=false,cnA=null,sel=null,mask=false,rev=new Set(),hist=[],redo=[],V={x:10,y:10,k:1},hitSet=new Set(),forced=new Set(),nowId=null,hits=[],hi=-1;
 const mk=n=>({id:nid(),ts:Date.now(),root:T(n)});
 let DB=null;try{DB=JSON.parse(localStorage.getItem(K))}catch(e){}
 const DBOK=!!(DB&&DB.maps&&DB.maps.length);
 if(!DBOK){let r0=null;try{r0=JSON.parse(localStorage.getItem('mm1'))}catch(e){}
  const m={id:nid(),ts:Date.now(),root:r0&&r0.k?r0:T('肩胛区',T('肌肉',T('冈上'),T('冈下'),T('小圆'),T('大圆')),T('三边孔'),T('四边孔'),T('肌腱袖',T('组成'),T('意义')))};DB={cur:m.id,maps:[m]}}
-let cm=DB.maps.find(x=>x.id===DB.cur)||DB.maps[0],root=cm.root;DB.cur=cm.id;
+DB.folders=DB.folders||[];let cm=DB.maps.find(x=>x.id===DB.cur)||DB.maps[0],root=cm.root;DB.cur=cm.id;
 let FH=null,wt=0,tt=0;
 const save=()=>{cm.root=root;cm.ts=Date.now();try{localStorage.setItem(K,JSON.stringify(DB))}catch(e){}
  if(FH){clearTimeout(wt);wt=setTimeout(()=>flush(false).then(stat),500)}};
@@ -180,7 +187,7 @@ const cnt=n=>n.k.reduce((a,c)=>a+1+cnt(c),0);
 function mut(f){hist.push(JSON.stringify(root));if(hist.length>100)hist.shift();redo=[];f();save();render()}
 function relset(){const s=new Set();if(!sel)return s;const all=n=>{s.add(n.id);n.k.forEach(all)};const path=(n,a)=>{if(n.id===sel){a.forEach(x=>s.add(x.id));all(n);return true}return n.k.some(c=>path(c,a.concat(n)))};path(root,[]);return s}
 function build(n,rel){
- const e=document.createElement('div');e.className='n'+(n.id===sel?' sel':'')+(rel&&!rel.has(n.id)?' dim':'')+(n.m?' m'+n.m:'')+(hitSet.has(n.id)?' hit':'')+(n.id===nowId?' now':'');e.dataset.id=n.id;
+ const e=document.createElement('div');e.className='n'+(n.id===sel?' sel':'')+(rel&&!rel.has(n.id)?' dim':'')+(n.m?' m'+n.m:'')+(hitSet.has(n.id)?' hit':'')+(n.id===nowId?' now':'')+(MS.has(n.id)?' ms':'')+(n.id===cnA?' cna':'');e.dataset.id=n.id;
  const l=document.createElement('div'),leaf=!n.k.length,col=n.c&&!forced.has(n.id);
  l.className='lab'+(leaf?' leaf':'')+(mask&&leaf&&!rev.has(n.id)?' hide':'');l.textContent=n.t||' ';
  if(n.note||(n.imgs&&n.imgs.length)){const t=document.createElement('i');t.className='nt';t.textContent='✎';l.append(t)}
@@ -189,13 +196,14 @@ function build(n,rel){
  if(!leaf&&!col){const k=document.createElement('div');k.className='kids';n.k.forEach(c=>k.append(build(c,rel)));e.append(k)}
  return e}
 const apply=()=>W.style.transform=`translate(${V.x}px,${V.y}px) scale(${V.k})`;
-function render(){if(sel&&!find(sel))sel=null;W.replaceChildren(build(root,sel?relset():null));const mb=$('[data-a=mask]');if(mb)mb.textContent=mask?'取消遮挡':'遮挡';apply();listRender()}
+function render(){if(sel&&!find(sel))sel=null;W.replaceChildren(build(root,sel?relset():null));const mb=$('[data-a=mask]');if(mb)mb.textContent=mask?'取消遮挡':'遮挡';const bb=$('[data-a=box]');if(bb)bb.textContent=boxMode?'退出框选':'框选';const lb=$('[data-a=link]');if(lb)lb.textContent=cnMode?'退出连接':'连接';const kb=$('[data-a=mark]');if(kb)kb.textContent=mkMode?'退出上色':'标记';apply();drawLinks();listRender()}
 function fit(){const sw=S.clientWidth,sh=S.clientHeight,w=W.offsetWidth,h=W.offsetHeight,k=Math.min(1,sw/w,sh/h);V={k,x:0,y:0};apply()}
 function edit(){const r=find(sel);if(!r)return;const t=$('#dlg textarea');t.value=r.n.t;D.hidden=false;t.focus();t.select()}
 $('#ok').onclick=()=>{const v=$('#dlg textarea').value;D.hidden=true;
+ if(rnf){const t=v.replace(/\s+/g,' ').trim(),id=rnf;rnf=null;if(t){if(id==='new')DB.folders.push({id:nid(),name:t,open:1});else{const f=DB.folders.find(x=>x.id===id);if(f)f.name=t}save();listRender()}return}
  if(rn){const m=DB.maps.find(x=>x.id===rn),t=v.replace(/\s+/g,' ').trim();rn=null;if(m&&t){if(m===cm)mut(()=>root.t=t);else{m.root.t=t;save();listRender()}}return}
  const r=find(sel);if(r&&v!==r.n.t)mut(()=>r.n.t=v)};
-$('#no').onclick=()=>{D.hidden=true;rn=null};
+$('#no').onclick=()=>{D.hidden=true;rn=null;rnf=null};
 function mv(d){const r=find(sel);if(!r||!r.p)return;const j=r.i+d;if(j<0||j>=r.p.k.length)return;mut(()=>{[r.p.k[r.i],r.p.k[j]]=[r.p.k[j],r.p.k[r.i]]})}
 function undo(){if(!hist.length)return;redo.push(JSON.stringify(root));root=JSON.parse(hist.pop());save();render()}
 function doRedo(){if(!redo.length)return;hist.push(JSON.stringify(root));root=JSON.parse(redo.pop());save();render()}
@@ -203,7 +211,7 @@ const A={
  child(){const r=find(sel||root.id);mut(()=>{const m=T('新节点');r.n.c=false;r.n.k.push(m);sel=m.id});edit()},
  sib(){const r=find(sel);if(!r||!r.p)return A.child();mut(()=>{const m=T('新节点');r.p.k.splice(r.i+1,0,m);sel=m.id});edit()},
  edit,undo,redo:doRedo,fit,
- del(){const r=find(sel);if(!r||!r.p)return;if(r.n.k.length&&!confirm('删除该节点及其子节点？'))return;mut(()=>{r.p.k.splice(r.i,1);sel=r.p.id})},
+ del(){if(MS.size){delMS();return}const r=find(sel);if(!r||!r.p)return;if(r.n.k.length&&!confirm('删除该节点及其子节点？'))return;mut(()=>{r.p.k.splice(r.i,1);sel=r.p.id})},
  up(){mv(-1)},down(){mv(1)},
  out(){const r=find(sel);if(!r||!r.p)return;const g=find(r.p.id);if(!g||!g.p)return;mut(()=>{r.p.k.splice(r.i,1);g.p.k.splice(g.i+1,0,r.n)})},
  fsm(){setFS(-2)},fsp(){setFS(2)},gm(){setGP(-4)},gp(){setGP(4)},
@@ -212,19 +220,20 @@ const A={
  import(){$('#file').click()},
  file(){pickFile().then(ok=>ok&&manualSave())}};
 document.getElementById('sv').onclick=manualSave;
-$('#bar').onclick=e=>{const a=e.target.dataset.a;if(a)A[a]()};
+$('#bar').onclick=e=>{const a=e.target.dataset.a;if(a){A[a]();if(root.ln)requestAnimationFrame(drawLinks)}};
 $('#file').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;f.text().then(s=>{const o=JSON.parse(s);if(o.maps&&o.maps.length){o.maps.forEach(m=>{const i=DB.maps.findIndex(x=>x.id===m.id);i<0?DB.maps.push(m):DB.maps[i]=m});switchTo(o.cur&&DB.maps.find(x=>x.id===o.cur)?o.cur:o.maps[0].id);return}if(!o.k)throw 0;const m=mk('');m.root=o;DB.maps.push(m);switchTo(m.id)}).catch(()=>alert('文件格式不对'))};
 addEventListener('keydown',e=>{
- if(!D.hidden){if(e.key==='Escape'){D.hidden=true;rn=null}else if(e.key==='Enter'&&(e.ctrlKey||e.metaKey))$('#ok').click();return}
+ if(!D.hidden){if(e.key==='Escape'){D.hidden=true;rn=null;rnf=null}else if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&e.keyCode!==229){e.preventDefault();$('#ok').click()}return}
  if($('#drawer').classList.contains('on')){if(e.key==='Escape')drawer(false);return}
  if(!$('#cfg').hidden){if(e.key==='Escape')$('#cfg').hidden=true;return}
  if(!$('#fl').hidden){if(e.key==='Escape')closeFloat();return}
  if(!$('#nt').hidden){if(e.key==='Escape'){if(!$('#vw').hidden)closeViewer();else closeNote()}return}
+ if((e.ctrlKey||e.metaKey)&&(e.key||'').toLowerCase()==='f'){e.preventDefault();const q=$('#q');q.focus();q.select();return}
  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
  const m=e.ctrlKey||e.metaKey,k=e.key;
  if(m&&k==='z'){e.preventDefault();e.shiftKey?doRedo():undo()}else if(m&&k==='y'){e.preventDefault();doRedo()}
- else if(m)return;
- else if(k==='Tab'){e.preventDefault();A.child()}else if(k==='Enter'){e.preventDefault();A.sib()}
+ else if(m&&(k||'').toLowerCase()==='c'){if(String(getSelection()))return;e.preventDefault();A.copy()}else if(m&&(k||'').toLowerCase()==='v'){e.preventDefault();A.paste()}else if(m&&(k||'').toLowerCase()==='a'){e.preventDefault();A.all()}else if(m)return;
+ else if(k==='Tab'){e.preventDefault();A.box()}else if(k==='Enter'){e.preventDefault();A.sib()}
  else if(k==='Delete'||k==='Backspace')A.del();else if(k==='F2')edit()});
 /* 手势：单指平移、双指缩放、长按拖动换位 */
 const P=new Map();let M=null,tm=0,gh=null,tgt=null,lt={id:null,t:0};
@@ -240,11 +249,12 @@ function moveDrag(e){
 function drop(id){const t=tgt;endDrag();if(!t)return;
  mut(()=>{const r=find(id);r.p.k.splice(r.i,1);if(t.z==='in'){const d=find(t.id).n;d.c=false;d.k.push(r.n)}else{const d=find(t.id);d.p.k.splice(d.i+(t.z==='dn'?1:0),0,r.n)}})}
 S.addEventListener('pointerdown',e=>{
- if(!$('#fl').hidden)return;
+ if(!$('#fl').hidden||e.button>0)return;
  P.set(e.pointerId,{x:e.clientX,y:e.clientY});
- if(P.size===2){clearTimeout(tm);endDrag();const[a,b]=[...P.values()];M={m:'pinch',d:Math.hypot(a.x-b.x,a.y-b.y),V:{...V},c:{x:(a.x+b.x)/2,y:(a.y+b.y)/2}};return}
+ if(P.size===2){clearTimeout(tm);endDrag();rmBox();const[a,b]=[...P.values()];M={m:'pinch',d:Math.hypot(a.x-b.x,a.y-b.y),V:{...V},c:{x:(a.x+b.x)/2,y:(a.y+b.y)/2}};return}
  if(P.size>2)return;
  const l=e.target.closest('.lab'),id=l&&l.parentNode.dataset.id;
+ if(boxMode&&!l){M={m:'box',x:e.clientX,y:e.clientY,add:e.ctrlKey||e.shiftKey};mkBox(e);return}
  M={m:l?'press':'pan',x:e.clientX,y:e.clientY,V:{...V},l,id,dot:e.target.classList.contains('dot'),nt:e.target.classList.contains('nt'),moved:false};
  if(l&&id!==root.id&&!M.dot&&!M.nt)tm=setTimeout(()=>{if(M&&M.m==='press'){M.m='drag';startDrag(l,e)}},380)});
 addEventListener('pointermove',e=>{
@@ -252,6 +262,7 @@ addEventListener('pointermove',e=>{
  if(M.m==='pinch'){const[a,b]=[...P.values()];if(!b)return;
   const k=Math.min(3,Math.max(.2,M.V.k*Math.hypot(a.x-b.x,a.y-b.y)/M.d)),c={x:(a.x+b.x)/2,y:(a.y+b.y)/2},wx=(M.c.x-M.V.x)/M.V.k,wy=(M.c.y-M.V.y)/M.V.k;
   V={k,x:c.x-wx*k,y:c.y-wy*k};apply();return}
+ if(M.m==='box'){drawBox(e);return}
  const dx=e.clientX-M.x,dy=e.clientY-M.y;
  if(M.m==='press'&&Math.hypot(dx,dy)>8){clearTimeout(tm);M.m='pan'}
  if(M.m==='pan'){if(Math.hypot(dx,dy)>4)M.moved=true;V={...V,x:M.V.x+dx,y:M.V.y+dy};apply()}
@@ -259,47 +270,54 @@ addEventListener('pointermove',e=>{
 const up=e=>{
  if(!P.delete(e.pointerId)||!M)return;clearTimeout(tm);const m=M;M=null;
  if(m.m==='pinch')return;
+ if(m.m==='box'){endBox(e,m);return}
  if(m.m==='drag'){drop(m.id);return}
  if(m.m==='press'){
   if(m.nt){openFloat(m.id)}else if(m.dot){const r=find(m.id);if(forced.has(m.id)&&r.n.c)forced.delete(m.id);else r.n.c=!r.n.c;save()}
+  else if(cnMode){cnTap(m.id)}else if(mkSty!==null){markTap(m.id)}else if(boxMode&&(e.ctrlKey||e.shiftKey)){MS.has(m.id)?MS.delete(m.id):MS.add(m.id)}
   else{const now=Date.now();if(lt.id===m.id&&now-lt.t<350){lt={id:null,t:0};sel=m.id;render();edit();return}lt={id:m.id,t:now};sel=m.id;if(mask&&m.l.classList.contains('leaf'))rev.has(m.id)?rev.delete(m.id):rev.add(m.id)}
   render()}
- else if(!m.moved&&!m.l){sel=null;render()}};
+ else if(!m.moved&&!m.l){sel=null;MS.clear();render()}};
 addEventListener('pointerup',up);addEventListener('pointercancel',up);
 S.addEventListener('wheel',e=>{e.preventDefault();if(!$('#fl').hidden)return;
  const k=Math.min(3,Math.max(.2,V.k*Math.exp(-e.deltaY*.0015))),wx=(e.clientX-V.x)/V.k,wy=(e.clientY-V.y)/V.k;
  V={k,x:e.clientX-wx*k,y:e.clientY-wy*k};apply()},{passive:false});
 /* 历史导图：抽屉、切换、长按面板 */
-let rn=null,shId=null;
+let rn=null,shId=null,rnf=null,shK='m';
 const drawer=on=>{$('#drawer').classList.toggle('on',on);$('#scrim').classList.toggle('on',on)};
-function listRender(){$('#list').replaceChildren(...DB.maps.map(m=>{const h=document.createElement('b');h.className='hd';h.textContent='≡';const d=document.createElement('div'),s=document.createElement('span'),c=document.createElement('small');d.className='it'+(m===cm?' cur':'');d.dataset.id=m.id;s.textContent=nm(m);c.textContent=(cnt(m.root)+1)+' 节点';d.append(s,c,h);return d}))}
+function listRenderOld(){$('#list').replaceChildren(...DB.maps.map(m=>{const h=document.createElement('b');h.className='hd';h.textContent='≡';const d=document.createElement('div'),s=document.createElement('span'),c=document.createElement('small');d.className='it'+(m===cm?' cur':'');d.dataset.id=m.id;s.textContent=nm(m);c.textContent=(cnt(m.root)+1)+' 节点';d.append(s,c,h);return d}))}
 function switchTo(id,keep){const m=DB.maps.find(x=>x.id===id);if(!m)return;cm=m;DB.cur=id;root=m.root;sel=null;hist=[];redo=[];rev.clear();$('#q').value='';hits=[];hitSet=new Set();forced=new Set();nowId=null;hi=-1;qui();save();render();fit();if(!keep)drawer(false)}
 function newMap(){const m=mk('新导图');DB.maps.unshift(m);switchTo(m.id);sel=root.id;render();edit()}
 function delMap(id){const m=DB.maps.find(x=>x.id===id);if(!m||!confirm('删除「'+nm(m)+'」？'))return;
  DB.maps=DB.maps.filter(x=>x!==m);if(!DB.maps.length)DB.maps.push(mk('新导图'));
  if(m===cm)switchTo([...DB.maps].sort((a,b)=>b.ts-a.ts)[0].id,true);else{save();listRender()}}
-function openSheet(id){shId=id;$('#stt').textContent=nm(DB.maps.find(x=>x.id===id));$('#sheet').classList.add('on');$('#scrim2').classList.add('on')}
+function openSheet(id){shId=id;const fo=DB.folders.find(x=>x.id===id);shK=fo?'f':'m';$('#mvb').style.display=fo?'none':'';$('#stt').textContent=fo?fo.name:nm(DB.maps.find(x=>x.id===id));$('#sheet').classList.add('on');$('#scrim2').classList.add('on')}
 function closeSheet(){$('#sheet').classList.remove('on');$('#scrim2').classList.remove('on')}
 $('#menu').onclick=()=>{listRender();drawer(true)};$('#new').onclick=newMap;
 $('#scrim').onclick=()=>drawer(false);$('#scrim2').onclick=closeSheet;
-$('#rn').onclick=()=>{const m=DB.maps.find(x=>x.id===shId);closeSheet();if(!m)return;rn=m.id;const t=$('#dlg textarea');t.value=nm(m);D.hidden=false;t.focus();t.select()};
-$('#rm').onclick=()=>{closeSheet();delMap(shId)};
+$('#rn').onclick=()=>{if(shK==='f'){const f=DB.folders.find(x=>x.id===shId);closeSheet();if(!f)return;rnf=f.id;const t=$('#dlg textarea');t.value=f.name;D.hidden=false;t.focus();t.select();return}const m=DB.maps.find(x=>x.id===shId);closeSheet();if(!m)return;rn=m.id;const t=$('#dlg textarea');t.value=nm(m);D.hidden=false;t.focus();t.select()};
+$('#rm').onclick=()=>{closeSheet();if(shK==='f')delFolder(shId);else delMap(shId)};
+$('#mvb').onclick=()=>{closeSheet();openMove(shId)};$('#mvc').onclick=()=>{$('#mvp').hidden=true};
+$('#nf').onclick=()=>{rnf='new';const t=$('#dlg textarea');t.value='新文件夹';D.hidden=false;t.focus();t.select()};
 const L=$('#list');let lp=0,lpf=false,lx=0,ly=0;
-L.addEventListener('pointerdown',e=>{if(e.target.closest('.hd'))return;const it=e.target.closest('.it');if(!it)return;lpf=false;lx=e.clientX;ly=e.clientY;clearTimeout(lp);lp=setTimeout(()=>{lpf=true;openSheet(it.dataset.id)},500)});
+L.addEventListener('pointerdown',e=>{if(e.target.closest('.hd'))return;const it=e.target.closest('.it,.fd');if(!it)return;lpf=false;lx=e.clientX;ly=e.clientY;clearTimeout(lp);lp=setTimeout(()=>{lpf=true;openSheet(it.dataset.id)},500)});
 L.addEventListener('pointermove',e=>{if(Math.hypot(e.clientX-lx,e.clientY-ly)>8)clearTimeout(lp)});
-L.addEventListener('pointerup',e=>{clearTimeout(lp);if(e.target.closest('.hd'))return;const it=e.target.closest('.it');if(it&&!lpf&&Math.hypot(e.clientX-lx,e.clientY-ly)<=8)switchTo(it.dataset.id)});
+L.addEventListener('pointerup',e=>{clearTimeout(lp);if(e.target.closest('.hd'))return;const it=e.target.closest('.it,.fd');if(it&&!lpf&&Math.hypot(e.clientX-lx,e.clientY-ly)<=8)(it.classList.contains('fd')?togF(it.dataset.id):switchTo(it.dataset.id))});
 L.addEventListener('pointercancel',()=>clearTimeout(lp));
-L.addEventListener('contextmenu',e=>{e.preventDefault();if(e.target.closest('.hd'))return;clearTimeout(lp);const it=e.target.closest('.it');if(it){lpf=true;openSheet(it.dataset.id)}});
+L.addEventListener('contextmenu',e=>{e.preventDefault();if(e.target.closest('.hd'))return;clearTimeout(lp);const it=e.target.closest('.it,.fd');if(it){lpf=true;openSheet(it.dataset.id)}});
 
 let ld=null;
 const clrD=()=>L.querySelectorAll('.ru,.rd').forEach(x=>x.classList.remove('ru','rd'));
 L.addEventListener('pointerdown',e=>{const h=e.target.closest('.hd');if(!h)return;const it=h.parentNode;ld={id:it.dataset.id,el:it,t:null};it.style.opacity='.5';try{h.setPointerCapture(e.pointerId)}catch(x){}});
 L.addEventListener('pointermove',e=>{if(!ld)return;clrD();ld.t=null;
- const t=document.elementFromPoint(e.clientX,e.clientY),it=t&&t.closest&&t.closest('.it');
- if(it&&it!==ld.el){const rc=it.getBoundingClientRect(),after=e.clientY>rc.top+rc.height/2;ld.t={id:it.dataset.id,after};it.classList.add(after?'rd':'ru')}
+ const t=document.elementFromPoint(e.clientX,e.clientY),it=t&&t.closest&&t.closest('.it,.fd');
+ if(it&&it!==ld.el){const rc=it.getBoundingClientRect(),after=e.clientY>rc.top+rc.height/2,fd=it.classList.contains('fd');ld.t={id:it.dataset.id,after,fd};it.classList.add(fd||after?'rd':'ru')}
  const r=L.getBoundingClientRect();if(e.clientY<r.top+36)L.scrollTop-=10;else if(e.clientY>r.bottom-36)L.scrollTop+=10});
 const endLd=e=>{if(!ld)return;const d=ld;ld=null;d.el.style.opacity='';clrD();
- if(e.type==='pointerup'&&d.t){const a=DB.maps.findIndex(x=>x.id===d.id);if(a>=0){const m=DB.maps.splice(a,1)[0];let b=DB.maps.findIndex(x=>x.id===d.t.id);if(b<0)b=DB.maps.length;else if(d.t.after)b++;DB.maps.splice(b,0,m);save()}}
+ if(e.type==='pointerup'&&d.t){const a=DB.maps.findIndex(x=>x.id===d.id);if(a>=0){const tm=DB.maps.find(x=>x.id===d.t.id),m=DB.maps.splice(a,1)[0];
+  if(d.t.fd){m.f=d.t.id;const f=DB.folders.find(x=>x.id===d.t.id);if(f)f.open=1;DB.maps.push(m)}
+  else if(tm){let b=DB.maps.indexOf(tm);if(d.t.after)b++;DB.maps.splice(b,0,m);if(tm.f)m.f=tm.f;else delete m.f}
+  else DB.maps.push(m);save()}}
  listRender()};
 L.addEventListener('pointerup',endLd);L.addEventListener('pointercancel',endLd);
 /* 搜索 */
@@ -316,15 +334,17 @@ $('#qx').onclick=()=>{$('#q').value='';doSearch()};
 /* 标记 */
 const MC=[null,'#d33','#e08a00','#2e9e4f','#7a3fb5'],MN=['无','重点','易错','绿','紫'],PAL=$('#pal');
 MC.forEach((c,i)=>{const b=document.createElement('button');b.title=MN[i];if(c)b.style.background=c;else b.textContent='×';
- b.onclick=()=>{PAL.hidden=true;const r=find(sel);if(!r)return;mut(()=>{if(i)r.n.m=i;else delete r.n.m})};PAL.append(b)});
-document.addEventListener('pointerdown',e=>{if(!PAL.hidden&&!PAL.contains(e.target)&&e.target.dataset.a!=='mark')PAL.hidden=true},true);
+ b.onclick=()=>{
+ if(MS.size){PAL.hidden=true;mut(()=>{MS.forEach(id=>{const r=find(id);if(r){if(i)r.n.m=i;else delete r.n.m}})});return}
+ mkSty=i;mkMode=!sel;cnMode=false;cnA=null;PAL.hidden=!mkMode;[...PAL.children].forEach((x,j)=>x.style.outline=mkMode&&j===i?'3px solid #333':'');toast(mkMode?'批量上色：点节点上色，再点去除':'点击一个节点上色');render()};PAL.append(b)});
+document.addEventListener('pointerdown',e=>{if(!PAL.hidden&&!PAL.contains(e.target)&&e.target.dataset.a!=='mark'&&!mkMode)PAL.hidden=true},true);
 /* 导出缩进文本 */
 function dl(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click()}
 /* 工具栏自定义 */
-const REG=[['child','子级'],['sib','同级'],['edit','编辑'],['del','删除'],['up','上移'],['down','下移'],['out','升级'],['mark','标记'],['note','备注'],['undo','撤销'],['redo','重做'],['mask','遮挡'],['fit','适应'],['fsm','A−','字号减小'],['fsp','A+','字号增大'],['gm','层距−','层距减小'],['gp','层距+','层距增大'],['file','换文件'],['export','导出','导出 JSON'],['text','导出文本','导出缩进文本'],['import','导入'],['cfg','自定义']].map(x=>({a:x[0],l:x[1],n:x[2]||x[1]}));
+const REG=[['child','子级'],['sib','同级'],['edit','编辑'],['del','删除'],['up','上移'],['down','下移'],['out','升级'],['mark','标记'],['box','框选'],['link','连接'],['copy','复制'],['paste','粘贴'],['note','备注'],['undo','撤销'],['redo','重做'],['mask','遮挡'],['fit','适应'],['fsm','A−','字号减小'],['fsp','A+','字号增大'],['gm','层距−','层距减小'],['gp','层距+','层距增大'],['file','换文件'],['export','导出','导出 JSON'],['text','导出文本','导出缩进文本'],['import','导入'],['cfg','自定义']].map(x=>({a:x[0],l:x[1],n:x[2]||x[1]}));
 let BC=[];try{BC=JSON.parse(localStorage.getItem('mmbar'))||[]}catch(e){}
 function normBC(){const seen=new Set();BC=BC.filter(x=>REG.some(r=>r.a===x.a)&&!seen.has(x.a)&&seen.add(x.a));REG.forEach(r=>{if(!seen.has(r.a)){const it={a:r.a,s:1},ci=BC.findIndex(x=>x.a==='cfg');ci>=0?BC.splice(ci,0,it):BC.push(it)}});BC.forEach(x=>{if(x.a==='cfg')x.s=1})}
-function buildBar(){$('#bar').replaceChildren(...BC.filter(x=>x.s).map(x=>{const r=REG.find(r=>r.a===x.a),b=document.createElement('button');b.dataset.a=x.a;b.textContent=x.a==='mask'&&mask?'取消遮挡':r.l;return b}))}
+function buildBar(){$('#bar').replaceChildren(...BC.filter(x=>x.s).map(x=>{const r=REG.find(r=>r.a===x.a),b=document.createElement('button');b.dataset.a=x.a;b.textContent=x.a==='mask'&&mask?'取消遮挡':x.a==='box'&&boxMode?'退出框选':x.a==='link'&&cnMode?'退出连接':r.l;return b}))}
 function saveBC(){try{localStorage.setItem('mmbar',JSON.stringify(BC))}catch(e){}buildBar()}
 function cfgRender(){$('#cl').replaceChildren(...BC.map((x,i)=>{const r=REG.find(r=>r.a===x.a),d=document.createElement('div');d.className='row';
  const c=document.createElement('input');c.type='checkbox';c.checked=!!x.s;c.disabled=x.a==='cfg';c.onchange=()=>{x.s=c.checked?1:0;saveBC()};
@@ -338,6 +358,61 @@ Object.assign(A,{
  mark(){if(!sel){toast('先选中一个节点');return}PAL.hidden=!PAL.hidden},
  text(){const o=[],w=(n,d)=>{o.push('\t'.repeat(d)+(n.t||'').replace(/\s*\n\s*/g,' '));n.k.forEach(c=>w(c,d+1))};w(root,0);dl(nm(cm)+'.txt',o.join('\n'),'text/plain')},
  cfg(){cfgRender();$('#cfg').hidden=false}});
+/* v2.6：文件夹、框选、复制粘贴、连线 */
+let bxEl=null;
+function listRender(){const inF=new Set(DB.folders.map(f=>f.id)),out=[];
+ const mi=(m,ind)=>{const d=document.createElement('div'),sp=document.createElement('span'),c=document.createElement('small'),h=document.createElement('b');h.className='hd';h.textContent='≡';d.className='it'+(m===cm?' cur':'')+(ind?' in':'');d.dataset.id=m.id;sp.textContent=nm(m);c.textContent=(cnt(m.root)+1)+' 节点';d.append(sp,c,h);return d};
+ DB.folders.forEach(f=>{const ms=DB.maps.filter(m=>m.f===f.id),d=document.createElement('div'),sp=document.createElement('span'),c=document.createElement('small');d.className='fd';d.dataset.id=f.id;sp.textContent=(f.open===0?'▸ ':'▾ ')+'📁 '+f.name;c.textContent=ms.length;d.append(sp,c);out.push(d);if(f.open!==0)ms.forEach(m=>out.push(mi(m,1)))});
+ DB.maps.filter(m=>!m.f||!inF.has(m.f)).forEach(m=>out.push(mi(m,0)));$('#list').replaceChildren(...out)}
+function togF(id){const f=DB.folders.find(x=>x.id===id);if(f){f.open=f.open===0?1:0;save();listRender()}}
+function delFolder(id){const f=DB.folders.find(x=>x.id===id);if(!f||!confirm('删除文件夹「'+f.name+'」？其中的导图会移出文件夹'))return;DB.maps.forEach(m=>{if(m.f===id)delete m.f});DB.folders=DB.folders.filter(x=>x!==f);save();listRender()}
+function openMove(id){const m=DB.maps.find(x=>x.id===id);if(!m)return;
+ const b1=(t,fid)=>{const b=document.createElement('button');b.textContent=((fid?m.f===fid:!m.f)?'✓ ':'')+t;b.onclick=()=>{if(fid)m.f=fid;else delete m.f;const f=DB.folders.find(x=>x.id===fid);if(f)f.open=1;$('#mvp').hidden=true;save();listRender()};return b};
+ $('#mvl').replaceChildren(b1('（不放入文件夹）',null),...DB.folders.map(f=>b1(f.name,f.id)));$('#mvp').hidden=false;if(!DB.folders.length)toast('还没有文件夹，先在列表顶部新建')}
+/* 框选 */
+function setBox(on){boxMode=on;MS=new Set();if(on){cnMode=false;cnA=null;mkSty=null;mkMode=false;PAL.hidden=true}S.style.cursor=on?'crosshair':'';toast(on?'框选：拖动框选，Tab 退出':'已退出框选');render()}
+function mkBox(e){rmBox();bxEl=document.createElement('div');bxEl.style.cssText='position:fixed;border:1.5px dashed #2f6fd0;background:#2f6fd022;z-index:8;pointer-events:none';document.body.append(bxEl);drawBox(e)}
+function drawBox(e){if(!bxEl||!M)return;const s=bxEl.style;s.left=Math.min(M.x,e.clientX)+'px';s.top=Math.min(M.y,e.clientY)+'px';s.width=Math.abs(e.clientX-M.x)+'px';s.height=Math.abs(e.clientY-M.y)+'px'}
+function rmBox(){if(bxEl)bxEl.remove();bxEl=null}
+function endBox(e,m){rmBox();const x1=Math.min(m.x,e.clientX),x2=Math.max(m.x,e.clientX),y1=Math.min(m.y,e.clientY),y2=Math.max(m.y,e.clientY);
+ if(x2-x1<4&&y2-y1<4){MS.clear();render();return}
+ if(!m.add)MS.clear();W.querySelectorAll('.n>.lab').forEach(l=>{const r=l.getBoundingClientRect();if(r.right>=x1&&r.left<=x2&&r.bottom>=y1&&r.top<=y2)MS.add(l.parentNode.dataset.id)});toast('已选 '+MS.size+' 个节点');render()}
+function delMS(){const ids=new Set(MS);ids.delete(root.id);if(!ids.size){MS.clear();render();return}
+ const rem=new Set(),mk=(n,d)=>{const x=d||ids.has(n.id);if(x)rem.add(n.id);n.k.forEach(c=>mk(c,x))};mk(root,false);
+ if(!confirm('删除选中的 '+rem.size+' 个节点（含其子节点）？'))return;
+ mut(()=>{const pr=n=>{n.k=n.k.filter(c=>!ids.has(c.id));n.k.forEach(pr)};pr(root);MS.clear();sel=null})}
+function forest(){const out=[],w=(n,par)=>{let p=par;if(MS.has(n.id)){const c={id:nid(),t:n.t,k:[],c:false};if(n.m)c.m=n.m;if(n.note)c.note=n.note;if(n.imgs)c.imgs=n.imgs.slice();(par?par.k:out).push(c);p=c}n.k.forEach(x=>w(x,p))};w(root,null);return out}
+const reId=x=>{x.id=nid();x.k.forEach(reId)};
+function ftxt(f){const o=[],w=(n,d)=>{o.push('\t'.repeat(d)+(n.t||'').replace(/\s*\n\s*/g,' '));n.k.forEach(c=>w(c,d+1))};f.forEach(n=>w(n,0));return o.join('\n')}
+/* 标记 */
+function markTap(id){const r=find(id);if(!r)return;mut(()=>{if(mkSty===0||r.n.m===mkSty)delete r.n.m;else r.n.m=mkSty});if(!mkMode){mkSty=null;[...PAL.children].forEach(x=>x.style.outline='')}}
+/* 连线 */
+function cnTap(id){if(!cnA){cnA=id;toast('再点第二个节点');return}if(cnA===id){cnA=null;return}
+ const a=cnA;cnA=null;mut(()=>{const L2=root.ln||(root.ln=[]),i=L2.findIndex(x=>(x[0]===a&&x[1]===id)||(x[0]===id&&x[1]===a));if(i>=0)L2.splice(i,1);else L2.push([a,id])})}
+function drawLinks(){const o=W.querySelector('#lk');if(o)o.remove();const ln=root.ln;if(!ln||!ln.length)return;
+ const w=W.getBoundingClientRect(),k=V.k,svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.id='lk';
+ svg.innerHTML='<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#888"/></marker></defs>';
+ const box=id=>{const e=W.querySelector('.n[data-id="'+id+'"]>.lab');if(!e)return null;const r=e.getBoundingClientRect();return{x:(r.left+r.width/2-w.left)/k,y:(r.top+r.height/2-w.top)/k,hw:r.width/2/k,hh:r.height/2/k}};
+ const edge=(P,dx,dy)=>{const t=Math.min(P.hw/(Math.abs(dx)||1e-6),P.hh/(Math.abs(dy)||1e-6));return{x:P.x+dx*t,y:P.y+dy*t}};
+ ln.forEach(([a,b])=>{const A1=box(a),B1=box(b);if(!A1||!B1)return;const dx=B1.x-A1.x,dy=B1.y-A1.y;if(!dx&&!dy)return;
+  const p1=edge(A1,dx,dy),p2=edge(B1,-dx,-dy),mx=(p1.x+p2.x)/2-dy*.12,my=(p1.y+p2.y)/2+dx*.12;
+  const p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d','M'+p1.x+' '+p1.y+' Q'+mx+' '+my+' '+p2.x+' '+p2.y);p.setAttribute('fill','none');p.setAttribute('stroke','#888');p.setAttribute('stroke-width','2');p.setAttribute('marker-end','url(#ah)');svg.append(p)});
+ W.append(svg)}
+Object.assign(A,{
+ box(){setBox(!boxMode)},
+ link(){cnMode=!cnMode;cnA=null;if(cnMode){boxMode=false;MS=new Set();mkSty=null;mkMode=false;PAL.hidden=true;S.style.cursor=''}toast(cnMode?'连线：依次点两个节点，再连一次取消':'已退出连接');render()},
+ mark(){if(mkMode||mkSty!==null){mkMode=false;mkSty=null;PAL.hidden=true;[...PAL.children].forEach(x=>x.style.outline='');toast('已退出上色');render();return}PAL.hidden=!PAL.hidden},
+ copy(){let f;if(MS.size)f=forest();else{const r=find(sel);if(!r){toast('先选中节点');return}f=[JSON.parse(JSON.stringify(r.n))];f.forEach(reId)}
+  if(!f.length)return;CB=JSON.stringify(f);toast('已复制 '+f.reduce((a,n)=>a+1+cnt(n),0)+' 个节点');try{navigator.clipboard.writeText(ftxt(f))}catch(e){}},
+ paste(){if(!CB){toast('剪贴板为空');return}const t=find(sel);if(!t){toast('先点击要粘贴到的节点');return}
+  const f=JSON.parse(CB);f.forEach(reId);mut(()=>{t.n.c=false;t.n.k.push(...f)})},
+ all(){boxMode=true;cnMode=false;mkSty=null;mkMode=false;MS=new Set();const w=n=>{MS.add(n.id);n.k.forEach(w)};w(root);S.style.cursor='crosshair';toast('已全选 '+MS.size+' 个节点');render()}});
+const CM=document.createElement('div');CM.id='cm';CM.hidden=true;document.body.append(CM);
+S.addEventListener('contextmenu',e=>{e.preventDefault();if(e.pointerType==='touch'||(M&&M.m==='drag'))return;const l=e.target.closest('.lab');if(!l){CM.hidden=true;return}
+ const id=l.parentNode.dataset.id;if(!MS.has(id)){MS.clear();sel=id;render()}
+ CM.replaceChildren(...[['复制','copy'],['粘贴为子节点','paste'],['删除','del']].map(([t,a])=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{CM.hidden=true;A[a]()};return b}));
+ CM.hidden=false;CM.style.left=Math.min(e.clientX,innerWidth-170)+'px';CM.style.top=Math.min(e.clientY,innerHeight-150)+'px'});
+document.addEventListener('pointerdown',e=>{if(!CM.hidden&&!CM.contains(e.target))CM.hidden=true},true);
 normBC();buildBar();
 
 /* 备注与图片 */
@@ -410,7 +485,7 @@ vw.addEventListener('wheel',e=>{e.preventDefault();const C={x:innerWidth/2,y:inn
 const b64=b=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsDataURL(b)});
 const B64=new Map();
 function imgIds(maps){const st=new Set(),w=n=>{(n.imgs||[]).forEach(i=>st.add(i));n.k.forEach(w)};maps.forEach(m=>w(m.root));return[...st]}
-async function pack(maps,cur){const imgs={};for(const id of imgIds(maps)){let e=B64.get(id);if(!e){const rec=await iop('get',id);if(!rec)continue;e={b:await b64(rec.b),t:rec.t?await b64(rec.t):null};B64.set(id,e)}imgs[id]=e}return{cur,maps,imgs}}
+async function pack(maps,cur){const imgs={};for(const id of imgIds(maps)){let e=B64.get(id);if(!e){const rec=await iop('get',id);if(!rec)continue;e={b:await b64(rec.b),t:rec.t?await b64(rec.t):null};B64.set(id,e)}imgs[id]=e}return{cur,maps,folders:DB.folders,imgs}}
 async function toRec(x){return{b:await(await fetch(x.b)).blob(),t:x.t?await(await fetch(x.t)).blob():null}}
 Object.assign(A,{
  note(){if(!sel){toast('先选中一个节点');return}openNote(sel)},
@@ -419,7 +494,7 @@ $('#file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)
  try{const o=JSON.parse(await f.text());
   if(o.imgs)for(const id of Object.keys(o.imgs))await iop('put',id,await toRec(o.imgs[id]));
   if(o.maps&&o.maps.length){
-   const dup=o.maps.filter(m=>DB.maps.some(x=>x.id===m.id));let over=true;
+   (o.folders||[]).forEach(f=>{if(!DB.folders.some(x=>x.id===f.id))DB.folders.push(f)});const dup=o.maps.filter(m=>DB.maps.some(x=>x.id===m.id));let over=true;
    if(dup.length)over=confirm('有 '+dup.length+' 张导图与现有的重复。\n确定：覆盖；取消：作为副本导入');
    let tgt=null;
    o.maps.forEach((m,j)=>{const orig=m.id,i=DB.maps.findIndex(x=>x.id===m.id);if(i<0)DB.maps.push(m);else if(over)DB.maps[i]=m;else{m.id=nid();DB.maps.push(m)}if(tgt===null||orig===o.cur)tgt=m.id});
