@@ -135,10 +135,11 @@ body.lock #bar,body.lock #tl,body.lock #sw,body.lock #sv{pointer-events:none;opa
 <div id="sw"><input id="q" type="text" enterkeyhint="search" placeholder="搜索" autocomplete="off"><span id="qc"></span><b id="qx">×</b></div>
 <div id="pal" hidden></div>
 <div id="cfg" hidden><div><h3>自定义工具栏</h3><div id="cl"></div><div class="r"><button id="cfgreset">恢复默认</button><button id="cfgdone">完成</button></div></div></div>
-<div id="dlg" hidden><div><div class="r" id="fmt"><button id="fsup">上标</button><button id="fsub">下标</button><button id="fnor">还原</button></div><textarea></textarea><div class="r"><button id="no">取消</button><button id="ok">确定</button></div></div></div>
+<div id="dlg" hidden><div><textarea></textarea><div class="r" id="fmt"><button id="fsup">上标</button><button id="fsub">下标</button><button id="fnor">还原</button></div><div class="r"><button id="no">取消</button><button id="ok">确定</button></div></div></div>
 <input type="file" id="file" accept=".json" hidden>
 <input type="file" id="ntf" accept="image/*" multiple hidden>
 <div id="nt" hidden><div class="np"><div class="nh"><b id="nttl"></b><button id="ntfs">全屏文字</button><button id="ntx">完成</button></div>
+<div id="ntfmt" style="display:flex;gap:8px;flex:none"><button id="nsup">上标</button><button id="nsub">下标</button><button id="nnor">还原</button></div>
 <textarea id="ntxt" placeholder="备注…"></textarea>
 <button id="ntadd">＋ 添加图片（也可粘贴）</button><div id="ntg"></div></div></div>
 <div id="ask" hidden><div><p id="askt"></p><small>压缩：最长边缩到 1600px，通常每张 100~300KB。<br>保留原图：占用空间大，图多时保存和导出会变慢。</small><button id="aky">压缩（推荐）</button><button id="akn">保留原图</button><button id="akc">取消</button></div></div>
@@ -419,10 +420,11 @@ document.addEventListener('pointerdown',e=>{if(!CM.hidden&&!CM.contains(e.target
 /* v2.7：上下标、按键测试 */
 const SF=[...'0123456789+-=()abcdefghijklmnoprstuvwxyzABDEGHIJKLMNOPRTUVW'],ST=[...'⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᵒᵖʳˢᵗᵘᵛʷˣʸᶻᴬᴮᴰᴱᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾᴿᵀᵁⱽᵂ'],BF=[...'0123456789+-=()aehijklmnoprstuvx'],BT=[...'₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₕᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥₓ'];
 const SUP={},SUB={},UNS={};SF.forEach((c,i)=>{SUP[c]=ST[i];UNS[ST[i]]=c});BF.forEach((c,i)=>{SUB[c]=BT[i];UNS[BT[i]]=c});
-function fmtSel(map){const t=$('#dlg textarea'),a=t.selectionStart,b=t.selectionEnd;if(a===b){toast('先选中文字');return}
- t.setRangeText([...t.value.slice(a,b)].map(c=>(map||UNS)[c]||c).join(''),a,b,'select');t.focus()}
+function fmtSel(map,t){t=t||$('#dlg textarea');const a=t.selectionStart,b=t.selectionEnd;if(a===b){toast('先选中文字');return}
+ t.setRangeText([...t.value.slice(a,b)].map(c=>(map||UNS)[c]||c).join(''),a,b,'select');t.focus();if(t.id==='ntxt')t.dispatchEvent(new Event('input'))}
 $('#fsup').onclick=()=>fmtSel(SUP);$('#fsub').onclick=()=>fmtSel(SUB);$('#fnor').onclick=()=>fmtSel(null);
 $('#fmt').addEventListener('mousedown',e=>e.preventDefault());
+$('#nsup').onclick=()=>fmtSel(SUP,$('#ntxt'));$('#nsub').onclick=()=>fmtSel(SUB,$('#ntxt'));$('#nnor').onclick=()=>fmtSel(null,$('#ntxt'));$('#ntfmt').addEventListener('mousedown',e=>e.preventDefault());
 function kcode(e){const k=e.key;if(k&&k.length===1)return k.toLowerCase();const c=e.code||'';return/^Key[A-Z]$/.test(c)?c[3].toLowerCase():''}
 let KT=false;
 document.addEventListener('keydown',e=>{if(KT)toast('key='+e.key+' code='+e.code+' ctrl='+e.ctrlKey+' meta='+e.metaKey+' alt='+e.altKey)},true);
