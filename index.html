@@ -281,7 +281,7 @@ const up=e=>{
   render()}
  else if(!m.moved&&!m.l){sel=null;MS.clear();render()}};
 addEventListener('pointerup',up);addEventListener('pointercancel',up);
-const wd=e=>(e.deltaMode===1?e.deltaY*33:e.deltaMode===2?e.deltaY*innerHeight:e.deltaY)*(e.ctrlKey?6:1);
+const wd=e=>(e.deltaMode===1?e.deltaY*33:e.deltaMode===2?e.deltaY*innerHeight:e.deltaY);
 S.addEventListener('wheel',e=>{e.preventDefault();if(!$('#fl').hidden)return;
  const k=Math.min(3,Math.max(.2,V.k*Math.exp(-wd(e)*.0015))),wx=(e.clientX-V.x)/V.k,wy=(e.clientY-V.y)/V.k;
  V={k,x:e.clientX-wx*k,y:e.clientY-wy*k};apply()},{passive:false});
