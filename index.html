@@ -121,7 +121,7 @@ body.lock #bar,body.lock #tl,body.lock #sw,body.lock #sv{pointer-events:none;opa
 .ms>.lab{background:#cfe6ff;border-color:#2f6fd0;border-style:dashed}.cna>.lab{outline:3px dashed #666;outline-offset:1px}
 #lk{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
 #cm{position:fixed;z-index:60;background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;padding:4px;display:flex;flex-direction:column;box-shadow:0 4px 16px #0004}#cm[hidden]{display:none}#cm button{font:inherit;font-size:16px;padding:8px 18px;text-align:left;color:var(--ink);background:none;border:0}#cm button:active{background:#dbe4ff}
-#fmt{justify-content:flex-start!important}
+#dlg #bt{justify-content:space-between;align-items:center;flex-wrap:nowrap;gap:6px}#dlg #fmt,#dlg .rr{display:flex;gap:6px;flex:none}#dlg #bt button{padding:6px 10px;white-space:nowrap}
 </style></head><body>
 <div id="stage"><div id="world"></div></div>
 <div id="tl"><button id="menu" aria-label="历史导图"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><button id="new" aria-label="新建导图">＋</button></div>
@@ -135,7 +135,7 @@ body.lock #bar,body.lock #tl,body.lock #sw,body.lock #sv{pointer-events:none;opa
 <div id="sw"><input id="q" type="text" enterkeyhint="search" placeholder="搜索" autocomplete="off"><span id="qc"></span><b id="qx">×</b></div>
 <div id="pal" hidden></div>
 <div id="cfg" hidden><div><h3>自定义工具栏</h3><div id="cl"></div><div class="r"><button id="cfgreset">恢复默认</button><button id="cfgdone">完成</button></div></div></div>
-<div id="dlg" hidden><div><textarea></textarea><div class="r" id="fmt"><button id="fsup">上标</button><button id="fsub">下标</button><button id="fnor">还原</button></div><div class="r"><button id="no">取消</button><button id="ok">确定</button></div></div></div>
+<div id="dlg" hidden><div><textarea></textarea><div class="r" id="bt"><div id="fmt"><button id="fsup">上标</button><button id="fsub">下标</button><button id="fnor">还原</button></div><div class="rr"><button id="no">取消</button><button id="ok">确定</button></div></div></div></div>
 <input type="file" id="file" accept=".json" hidden>
 <input type="file" id="ntf" accept="image/*" multiple hidden>
 <div id="nt" hidden><div class="np"><div class="nh"><b id="nttl"></b><button id="ntfs">全屏文字</button><button id="ntx">完成</button></div>
@@ -281,8 +281,9 @@ const up=e=>{
   render()}
  else if(!m.moved&&!m.l){sel=null;MS.clear();render()}};
 addEventListener('pointerup',up);addEventListener('pointercancel',up);
+const wd=e=>(e.deltaMode===1?e.deltaY*33:e.deltaMode===2?e.deltaY*innerHeight:e.deltaY)*(e.ctrlKey?6:1);
 S.addEventListener('wheel',e=>{e.preventDefault();if(!$('#fl').hidden)return;
- const k=Math.min(3,Math.max(.2,V.k*Math.exp(-e.deltaY*.0015))),wx=(e.clientX-V.x)/V.k,wy=(e.clientY-V.y)/V.k;
+ const k=Math.min(3,Math.max(.2,V.k*Math.exp(-wd(e)*.0015))),wx=(e.clientX-V.x)/V.k,wy=(e.clientY-V.y)/V.k;
  V={k,x:e.clientX-wx*k,y:e.clientY-wy*k};apply()},{passive:false});
 /* 历史导图：抽屉、切换、长按面板 */
 let rn=null,shId=null,rnf=null,shK='m';
@@ -496,7 +497,7 @@ const vup=e=>{if(!vp.delete(e.pointerId))return;
  if(vp.size===0){if(vm&&vm.m==='d'&&!vm.moved){const t=Date.now();if(t-vlast<300){VW=VW.k>1.05?{x:0,y:0,k:1}:{x:0,y:0,k:2.5};vapply();vlast=0}else vlast=t}vm=null}
  else if(vp.size===1){const q=[...vp.values()][0];vm={m:'d',x:q.x,y:q.y,V:{...VW},moved:true}}};
 vw.addEventListener('pointerup',vup);vw.addEventListener('pointercancel',vup);
-vw.addEventListener('wheel',e=>{e.preventDefault();const C={x:innerWidth/2,y:innerHeight/2},k=Math.min(8,Math.max(.5,VW.k*Math.exp(-e.deltaY*.0015))),wx=(e.clientX-C.x-VW.x)/VW.k,wy=(e.clientY-C.y-VW.y)/VW.k;VW={k,x:e.clientX-C.x-wx*k,y:e.clientY-C.y-wy*k};vapply()},{passive:false});
+vw.addEventListener('wheel',e=>{e.preventDefault();const C={x:innerWidth/2,y:innerHeight/2},k=Math.min(8,Math.max(.5,VW.k*Math.exp(-wd(e)*.0015))),wx=(e.clientX-C.x-VW.x)/VW.k,wy=(e.clientY-C.y-VW.y)/VW.k;VW={k,x:e.clientX-C.x-wx*k,y:e.clientY-C.y-wy*k};vapply()},{passive:false});
 /* 导出/导入/自动写入：图片一并打包 */
 const b64=b=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsDataURL(b)});
 const B64=new Map();
@@ -534,7 +535,7 @@ function zoomable(box,img){
   if(!P.size){if(m&&m.m==='d'&&!m.mv){const t=Date.now();if(t-last<300){T=T.k>1.05?{x:0,y:0,k:1}:{x:0,y:0,k:2.5};ap();last=0}else last=t}m=null}
   else if(P.size===1){const q=[...P.values()][0];m={m:'d',x:q.x,y:q.y,T:{...T},mv:true}}};
  box.addEventListener('pointerup',up);box.addEventListener('pointercancel',up);
- box.addEventListener('wheel',e=>{e.preventDefault();const c0=C(),k=Math.min(8,Math.max(1,T.k*Math.exp(-e.deltaY*.0015))),wx=(e.clientX-c0.x-T.x)/T.k,wy=(e.clientY-c0.y-T.y)/T.k;T=k===1?{x:0,y:0,k:1}:{k,x:e.clientX-c0.x-wx*k,y:e.clientY-c0.y-wy*k};ap()},{passive:false});
+ box.addEventListener('wheel',e=>{e.preventDefault();const c0=C(),k=Math.min(8,Math.max(1,T.k*Math.exp(-wd(e)*.0015))),wx=(e.clientX-c0.x-T.x)/T.k,wy=(e.clientY-c0.y-T.y)/T.k;T=k===1?{x:0,y:0,k:1}:{k,x:e.clientX-c0.x-wx*k,y:e.clientY-c0.y-wy*k};ap()},{passive:false});
  return{reset(){T={x:0,y:0,k:1};P.clear();m=null;ap()}}}
 const FL=$('#fl'),FZ=zoomable($('#flim'),$('#fli'));
 let flBig=false;
