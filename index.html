@@ -142,6 +142,24 @@ body.lock #bar,body.lock #tl,body.lock #sw,body.lock #sv{pointer-events:none;opa
 #aill button,#aipl button{display:flex;flex-direction:column;align-items:flex-start;text-align:left;width:100%}
 #aill button small{font-size:13px;opacity:.7}
 .ai-e{margin:4px 0;opacity:.7;font-size:15px}
+#aipr{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+#aipe{position:fixed;inset:0;background:#0006;display:flex;align-items:center;justify-content:center;z-index:47}#aipe[hidden]{display:none}
+#aipe>div{background:var(--paper);padding:14px;border-radius:12px;width:min(520px,92vw);max-height:88vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+#aipe h3{margin:0;font-size:18px;font-weight:normal;flex:1}
+#aipe button{font:inherit;font-size:16px;padding:6px 14px;color:var(--ink);background:#fffdf3;border:1.5px solid var(--ink);border-radius:8px}
+#aipe button:disabled{opacity:.5}
+#aipe input,#aipe select{font:inherit;font-size:16px;color:var(--ink);background:#fff;border:1.5px solid var(--ink);border-radius:8px;padding:6px 8px;min-width:0;width:100%;box-sizing:border-box;-webkit-user-select:text;user-select:text}
+#aipt{height:min(38vh,280px);resize:none;font-size:16px}
+#aitab button{flex:1;padding:6px 8px}#aitab button.on{background:var(--ink);color:var(--paper)}
+#aimp{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+#aimk{position:fixed;inset:0;background:#0006;display:flex;align-items:center;justify-content:center;z-index:48}#aimk[hidden]{display:none}
+#aimk>div{background:var(--paper);padding:14px;border-radius:12px;width:min(520px,92vw);max-height:88vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+#aimk h3{margin:0;font-size:18px;font-weight:normal}
+#aimk button{font:inherit;font-size:16px;padding:6px 14px;color:var(--ink);background:#fffdf3;border:1.5px solid var(--ink);border-radius:8px}
+#aiml{display:flex;flex-direction:column;gap:6px;overflow:auto}
+#aiml button{display:flex;flex-direction:column;align-items:flex-start;text-align:left;width:100%}#aiml button small{font-size:13px;opacity:.7}
+#aiun{position:fixed;right:8px;top:calc(56px + env(safe-area-inset-top));z-index:50;display:flex;align-items:center;gap:10px;max-width:80vw;padding:8px 12px;background:var(--ink);color:#fff;border-radius:10px;font-size:15px}#aiun[hidden]{display:none}
+#aiun span{flex:1}#aiun button{font:inherit;font-size:15px;padding:4px 12px;color:var(--ink);background:#fffdf3;border:0;border-radius:6px;flex:none}
 </style></head><body>
 <div id="stage"><div id="world"></div></div>
 <div id="tl"><button id="menu" aria-label="历史导图"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><button id="new" aria-label="新建导图">＋</button><button id="ai" aria-label="AI 提纲转导图">✨</button></div>
@@ -157,12 +175,25 @@ body.lock #bar,body.lock #tl,body.lock #sw,body.lock #sv{pointer-events:none;opa
 <div id="cfg" hidden><div><h3>自定义工具栏</h3><div id="cl"></div><div class="r"><button id="cfgreset">恢复默认</button><button id="cfgdone">完成</button></div></div></div>
 <div id="dlg" hidden><div><textarea></textarea><div class="r" id="bt"><div id="fmt"><button id="fsup">上标</button><button id="fsub">下标</button><button id="fnor">还原</button></div><div class="rr"><button id="no">取消</button><button id="ok">确定</button></div></div></div></div>
 <div id="aiw" hidden><div>
-<div class="ah"><h3>✨ 提纲转导图</h3><button id="aix" aria-label="关闭">×</button></div>
+<div class="ah"><h3>✨ AI 导图</h3><button id="aix" aria-label="关闭">×</button></div>
+<div class="ar" id="aitab"><button id="aitn" class="on">新建导图</button><button id="aits">补充到已有导图</button></div>
 <div class="ar"><button id="aip">选择 API ▾</button><button id="aig">⚙ 设置</button></div>
+<div class="ar"><button id="aipr">提示词：默认 ▾</button></div>
+<div class="ar" id="aitg" style="display:none"><button id="aimp">补充到：选择导图 ▾</button></div>
 <textarea id="ait" placeholder="把提纲粘贴到这里…" spellcheck="false"></textarea><div id="aier"></div>
 <div class="ar"><button id="aipa">粘贴</button><button id="aicl">清空</button><span class="sp" id="aic"></span><button id="aisd">发送</button></div>
 </div></div>
 <div id="aipk" hidden><div><h3>选择 API</h3><div id="aipl"></div><div class="ar"><button id="aipm">管理 API…</button><span class="sp"></span><button id="aipc">取消</button></div></div></div>
+<div id="aimk" hidden><div><h3>选择导图</h3><div id="aiml"></div><div class="ar"><span class="sp"></span><button id="aimc">取消</button></div></div></div>
+<div id="aiun" hidden><span id="aiut"></span><button id="aiub">撤销</button></div>
+<div id="aipe" hidden><div>
+<div class="ah"><h3 id="aipti">提示词</h3><button id="aipx">完成</button></div>
+<div class="fld"><span>当前预设</span><div class="ar"><select id="aipsel"></select><button id="aipnew">＋ 新增</button></div></div>
+<label class="fld" id="aipnw"><span>名称</span><input id="aipn" type="text" autocomplete="off" spellcheck="false"></label>
+<div class="fld"><span>风格要求（可修改）</span><textarea id="aipt" spellcheck="false"></textarea></div>
+<p class="ai-e" id="aiph" style="margin:0"></p>
+<div class="ar"><button id="aipd">删除预设</button><button id="aipr2">恢复默认</button></div>
+</div></div>
 <div id="ais" hidden><div>
 <div id="aisl"><h3>API 设置</h3><div id="aill"></div><div class="ar"><button id="aiad">＋ 新增</button><span class="sp"></span><button id="aidn">完成</button></div><p class="ai-e" style="margin:0">密钥只保存在本机浏览器里，不会随导图导出。</p></div>
 <div id="aise" hidden><h3>编辑 API</h3>
@@ -264,7 +295,7 @@ $('#bar').onclick=e=>{const a=e.target.dataset.a;if(a){A[a]();if(root.ln)request
 $('#file').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;f.text().then(s=>{const o=JSON.parse(s);if(o.maps&&o.maps.length){o.maps.forEach(m=>{const i=DB.maps.findIndex(x=>x.id===m.id);i<0?DB.maps.push(m):DB.maps[i]=m});switchTo(o.cur&&DB.maps.find(x=>x.id===o.cur)?o.cur:o.maps[0].id);return}if(!o.k)throw 0;const m=mk('');m.root=o;DB.maps.push(m);switchTo(m.id)}).catch(()=>alert('文件格式不对'))};
 addEventListener('keydown',e=>{
  if(!D.hidden){if(e.key==='Escape'){D.hidden=true;rn=null;rnf=null}else if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229&&!e.shiftKey&&(rn||rnf||e.ctrlKey||e.metaKey)){e.preventDefault();$('#ok').click()}return}
- if(!$('#aipk').hidden){if(e.key==='Escape')$('#aipk').hidden=true;return}if(!$('#ais').hidden){if(e.key==='Escape')aiBack();return}if(!$('#aiw').hidden){if(e.key==='Escape')$('#aiw').hidden=true;return}
+ if(!$('#aimk').hidden){if(e.key==='Escape')$('#aimk').hidden=true;return}if(!$('#aipe').hidden){if(e.key==='Escape')prClose();return}if(!$('#aipk').hidden){if(e.key==='Escape')$('#aipk').hidden=true;return}if(!$('#ais').hidden){if(e.key==='Escape')aiBack();return}if(!$('#aiw').hidden){if(e.key==='Escape')$('#aiw').hidden=true;return}
  if($('#drawer').classList.contains('on')){if(e.key==='Escape')drawer(false);return}
  if(!$('#cfg').hidden){if(e.key==='Escape')$('#cfg').hidden=true;return}
  if(!$('#fl').hidden){if(e.key==='Escape')closeFloat();return}
@@ -621,15 +652,67 @@ const aiBase=u=>(u||'').trim().replace(/[?#].*$/,'').replace(/\/+$/,'').replace(
 const aiHeaders=a=>a.fmt==='anthropic'?{'x-api-key':a.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}:{'Authorization':'Bearer '+a.key};
 const aiModelsUrl=a=>{const b=aiBase(a.url);return a.fmt==='anthropic'?(/\/v1$/.test(b)?b:b+'/v1')+'/models?limit=1000':b+'/models'};
 const aiEl=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
-function aiHead(){const c=aiCur();$('#aip').textContent=(c?c.name+(c.model?' · '+c.model:''):'选择 API')+' ▾'}
+/* 提示词预设：风格部分可编辑，输出格式规则固定（程序解析依赖它），存本机。n=新建导图，s=补充到已有导图 */
+const AI_STYLE='你是思维导图整理助手。用户会给你一份提纲或笔记，请把它整理成适合做思维导图的结构。\n要求：\n1. 保留原提纲的层次、顺序和关键信息，不要凭空添加原文没有的内容，也不要遗漏。\n2. 每个节点写成简短的词组或短句（尽量不超过 20 个字）；长句拆成上下级节点。\n3. 使用与原文相同的语言。';
+const AI_FMT='输出格式（必须严格遵守）：\n1. 只输出 Markdown 本身，不要任何解释、前言、结语，不要使用代码块、表格、编号、加粗、链接。\n2. 第一行用 "# " 写一个根节点标题，概括全文主题；即使有多个并列主题，也只能有这一个根。\n3. 其余内容全部用无序列表 "- " 表示层级，每深一层缩进 2 个空格。';
+const AI_STYLE2='你是思维导图补充助手。用户会给你一份现有的导图（Markdown，每个节点后面带编号 [#数字]）和一份新的提纲，请把提纲里的内容整理进导图。\n要求：\n1. 提纲里的某个点，如果导图里已经有了（意思相同即可，不必字面一致），并且提纲对它有额外的信息（解释、细节、例子），就把这些额外信息写成备注，补充到那个节点上。只有标题、没有额外信息的点，不要写备注，也不要把标题本身抄进备注。\n2. 提纲里的某个点，如果导图里没有，就把它作为新分支插入到最合适的位置，并保留它在提纲里的层次和子级。找不到合适的父节点时，挂到根节点下。\n3. 不要修改、删除或移动导图里已有的节点，也不要凭空添加提纲里没有的内容。\n4. 新增节点写成简短的词组或短句（尽量不超过 20 个字）；备注可以写完整的句子。\n5. 使用与提纲相同的语言。';
+const AI_FMT2='输出格式（必须严格遵守）：\n只输出改动清单，不要任何解释、前言、结语，不要使用代码块。每条改动以单独一行的指令开头：\n@备注 编号\n（指令下面写要补充进该节点备注的文字，可以多行，直到下一条指令）\n@新增 编号\n（指令下面用无序列表 "- " 写要挂到该节点下面的新分支，每深一层缩进 2 个空格，可以有多个并列分支）\n“编号”就是导图里节点后面 [#数字] 的数字，例如 [#12] 对应 12。可以输出任意多条指令。如果提纲里的内容导图里都已经有了，而且没有任何额外信息，就只输出一行：@无改动';
+const PRK={n:'mmprompt',s:'mmprompt2'},STY={n:AI_STYLE,s:AI_STYLE2},FMT={n:AI_FMT,s:AI_FMT2},PRS={};
+['n','s'].forEach(k=>{PRS[k]={cur:'d',dt:null,list:[]};try{const j=JSON.parse(localStorage.getItem(PRK[k]));if(j&&Array.isArray(j.list))Object.assign(PRS[k],j)}catch(e){}});
+let aiMode='n';
+const PR=()=>PRS[aiMode];
+const prSave=()=>{try{localStorage.setItem(PRK[aiMode],JSON.stringify(PR()))}catch(e){toast('保存失败：浏览器存储不可用')}};
+const prAll=()=>[{id:'d',name:'默认',text:PR().dt==null?STY[aiMode]:PR().dt}].concat(PR().list);
+const prCur=()=>prAll().find(x=>x.id===PR().cur)||prAll()[0];
+const aiSys=()=>(prCur().text.trim()||STY[aiMode])+'\n\n'+FMT[aiMode];
+function prHead(){const b=$('#aipr');if(b)b.textContent='提示词：'+(prCur().name||'未命名')+' ▾'}
+function aiHead(){prHead();const c=aiCur();$('#aip').textContent=(c?c.name+(c.model?' · '+c.model:''):'选择 API')+' ▾'}
 const aiT=$('#ait');
-$('#ai').onclick=()=>{aiHead();$('#aiw').hidden=false};
+/* 两个模式：新建导图 / 补充到已有导图 */
+let aiTgt=null;
+const aiTgtM=()=>DB.maps.find(x=>x.id===aiTgt)||null;
+function aiTgtHead(){const m=aiTgtM();$('#aimp').textContent='补充到：'+(m?nm(m):'选择导图')+' ▾'}
+function aiSetMode(m){aiMode=m;$('#aitn').classList.toggle('on',m==='n');$('#aits').classList.toggle('on',m==='s');$('#aitg').style.display=m==='s'?'':'none';aiT.placeholder=m==='s'?'把要补充的提纲粘贴到这里…':'把提纲粘贴到这里…';$('#aier').textContent='';aiHead();aiTgtHead()}
+$('#aitn').onclick=()=>aiSetMode('n');$('#aits').onclick=()=>aiSetMode('s');
+$('#aimp').onclick=()=>{const box=$('#aiml');box.replaceChildren();const fn=id=>{const f=(DB.folders||[]).find(x=>x.id===id);return f?f.name:''};
+ DB.maps.slice().sort((a,b)=>(b.id===DB.cur)-(a.id===DB.cur)).forEach(m=>{const b=aiEl('button');b.append(aiEl('span','',(m.id===aiTgt?'✓ ':'')+nm(m)));
+  const s=[m.id===DB.cur?'当前导图':'',m.f?fn(m.f):''].filter(Boolean).join(' · ');if(s)b.append(aiEl('small','',s));
+  b.onclick=()=>{aiTgt=m.id;aiTgtHead();$('#aimk').hidden=true};box.append(b)});$('#aimk').hidden=false};
+$('#aimc').onclick=()=>{$('#aimk').hidden=true};
+$('#aimk').addEventListener('click',e=>{if(e.target.id==='aimk')$('#aimk').hidden=true});
+/* 导图 → 带编号的 markdown；模型只返回按编号的改动清单 */
+function aiNum(rt){const ids=[null],o=[];const w=(n,d)=>{ids.push(n.id);const t=(n.t||'').replace(/\s*\n\s*/g,' ').trim()||'（空）';o.push((d?'  '.repeat(d-1)+'- ':'# ')+t+' [#'+(ids.length-1)+']');n.k.forEach(c=>w(c,d+1))};w(rt,0);return{md:o.join('\n'),ids}}
+function aiOps(out){out=String(out).replace(/<think>[\s\S]*?<\/think>/gi,'').replace(/\r/g,'');const ops=[];let cur=null;
+ for(const line of out.split('\n')){if(/^\s*```/.test(line))continue;
+  const h=line.match(/^\s*@(备注|新增)\s*\[?\s*[#＃]?\s*(\d+)\s*\]?\s*[:：]?\s*$/);
+  if(h){cur={type:h[1],i:+h[2],body:[]};ops.push(cur);continue}
+  if(/^\s*@/.test(line)){cur=null;continue}
+  if(cur)cur.body.push(line)}
+ return ops}
+function aiRun(ops,ids,rt){let nn=0,nd=0,bad=0;
+ for(const op of ops){const id=ids[op.i],r=id&&find(id,rt);if(!r){bad++;continue}
+  if(op.type==='备注'){const t=op.body.join('\n').trim();if(!t)continue;const old=r.n.note||'';if(old.includes(t))continue;r.n.note=old?old.replace(/\s+$/,'')+'\n\n'+t:t;nn++}
+  else{const{roots,n}=mdTree(op.body.join('\n'));if(!n){bad++;continue}r.n.c=false;roots.forEach(x=>r.n.k.push(x));nd+=n}}
+ return{nn,nd,bad}}
+let aiUt=0,aiUn=null;
+function aiSnack(msg,tid,hl){const bar=$('#aiun');$('#aiut').textContent=msg;aiUn={tid,hl};bar.hidden=false;clearTimeout(aiUt);aiUt=setTimeout(()=>{bar.hidden=true;aiUn=null},10000)}
+$('#aiub').onclick=()=>{const u=aiUn;$('#aiun').hidden=true;clearTimeout(aiUt);aiUn=null;if(!u)return;if(cm.id!==u.tid||hist.length!==u.hl){toast('之后又有其他修改，请用工具栏的撤销');return}undo();toast('已撤销补充')};
+function aiApply(out,ids,tid,cut){
+ const m=DB.maps.find(x=>x.id===tid);if(!m)throw new Error('目标导图已不存在');
+ const ops=aiOps(out);
+ if(!ops.length){if(/@无改动/.test(out)){$('#aiw').hidden=true;toast('提纲里的内容导图里都有了，没有需要补充的');return}throw new Error('没有从返回内容里解析出改动。返回内容开头：'+String(out).slice(0,120))}
+ const dry=aiRun(ops,ids,JSON.parse(JSON.stringify(m.root)));
+ if(!dry.nn&&!dry.nd)throw new Error('没有可应用的改动（'+ops.length+' 条指令的编号无效、内容为空或备注已存在）');
+ if(cm.id!==tid)switchTo(tid,true);
+ let res;mut(()=>{res=aiRun(ops,ids,root)});
+ $('#aiw').hidden=true;
+ aiSnack('已补充：新增 '+res.nd+' 个节点，补充 '+res.nn+' 条备注'+(res.bad?'；'+res.bad+' 条无法应用':'')+(cut?'（输出被截断，可能不完整）':''),tid,hist.length)}
+$('#ai').onclick=()=>{aiTgt=DB.cur;aiSetMode(aiMode);$('#aiw').hidden=false};
 $('#aix').onclick=()=>{if(aiAb)aiAb.abort();$('#aiw').hidden=true};
 aiT.oninput=()=>{$('#aic').textContent=aiT.value.length?aiT.value.length+' 字':''};
 $('#aicl').onclick=()=>{aiT.value='';aiT.oninput();aiT.focus()};
 $('#aipa').onclick=async()=>{try{const t=await navigator.clipboard.readText();if(!t){toast('剪贴板为空');return}const a=aiT.selectionStart,b=aiT.selectionEnd,v=aiT.value;aiT.value=v.slice(0,a)+t+v.slice(b);aiT.selectionStart=aiT.selectionEnd=a+t.length;aiT.oninput()}catch(e){toast('浏览器不允许读取剪贴板，请长按文本框粘贴')}};
 /* 发送：提纲 → 模型 → markdown → 新建导图 */
-const AI_SYS='你是思维导图整理助手。用户会给你一份提纲或笔记，请把它整理成适合做思维导图的 Markdown，并且只输出 Markdown 本身。\n规则：\n1. 第一行用 "# " 写一个根节点标题，概括全文主题；即使有多个并列主题，也只能有这一个根。\n2. 其余内容全部用无序列表 "- " 表示层级，每深一层缩进 2 个空格。\n3. 保留原提纲的层次、顺序和关键信息，不要凭空添加原文没有的内容，也不要遗漏。\n4. 每个节点写成简短的词组或短句（尽量不超过 20 个字）；长句拆成上下级节点。\n5. 不要输出任何解释、前言、结语，不要使用代码块、表格、编号、加粗、链接。\n6. 使用与原文相同的语言。';
 let aiAb=null;
 const aiOut=(a,j)=>{if(a.fmt==='anthropic')return(j.content||[]).filter(x=>x&&x.type==='text').map(x=>x.text).join('');const c=j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content;return Array.isArray(c)?c.map(x=>x&&x.text||'').join(''):(c||'')};
 function mdTree(txt){txt=String(txt).replace(/<think>[\s\S]*?<\/think>/gi,'').replace(/\r/g,'');
@@ -652,19 +735,23 @@ $('#aisd').onclick=async()=>{
  const text=aiT.value.trim(),a=aiCur(),er=$('#aier'),ic=$('#aic'),bt=$('#aisd');er.textContent='';
  if(!text){toast('先粘贴提纲');return}if(!a){toast('请先选择或添加 API');return}
  if(/[^\x20-\x7e]/.test(a.key)){er.textContent='密钥里有非英文字符，请到设置里检查';return}
+ let uMsg=text,sup=null;
+ if(aiMode==='s'){const m=aiTgtM();if(!m){toast('请先选择要补充的导图');return}sup=aiNum(m.root);uMsg='【现有导图】\n'+sup.md+'\n\n【新提纲】\n'+text}
+ const tid=aiTgt;
  const ab=aiAb=new AbortController();let sec=0,why='';const tmo=setTimeout(()=>{why='timeout';ab.abort()},180000);
  bt.textContent='取消';ic.textContent='生成中… 0s';const tk=setInterval(()=>{ic.textContent='生成中… '+(++sec)+'s'},1000);
  try{const base=aiBase(a.url);let url,body;
-  if(a.fmt==='anthropic'){url=(/\/v1$/.test(base)?base:base+'/v1')+'/messages';body={model:a.model,max_tokens:8192,system:AI_SYS,messages:[{role:'user',content:text}]}}
-  else{url=base+'/chat/completions';body={model:a.model,messages:[{role:'system',content:AI_SYS},{role:'user',content:text}]}}
+  if(a.fmt==='anthropic'){url=(/\/v1$/.test(base)?base:base+'/v1')+'/messages';body={model:a.model,max_tokens:8192,system:aiSys(),messages:[{role:'user',content:uMsg}]}}
+  else{url=base+'/chat/completions';body={model:a.model,messages:[{role:'system',content:aiSys()},{role:'user',content:uMsg}]}}
   const r=await fetch(url,{method:'POST',headers:{...aiHeaders(a),'Content-Type':'application/json'},body:JSON.stringify(body),signal:ab.signal});
   const raw=await r.text();let j=null;try{j=JSON.parse(raw)}catch(e){}
   if(!r.ok){const msg=j&&j.error&&(j.error.message||(typeof j.error==='string'?j.error:''))||raw.slice(0,200);throw new Error('HTTP '+r.status+(msg?'：'+msg:''))}
   if(!j)throw new Error('接口返回的不是 JSON：'+raw.slice(0,120));
-  const out=aiOut(a,j),{roots,n}=mdTree(out);
+  const out=aiOut(a,j),cut=j.stop_reason==='max_tokens'||(j.choices&&j.choices[0]&&j.choices[0].finish_reason==='length');
+  if(aiMode==='s'){aiApply(out,sup.ids,tid,cut);return}
+  const{roots,n}=mdTree(out);
   if(!n)throw new Error('没有从返回内容里解析出节点。返回内容开头：'+String(out).slice(0,120));
   let rt=roots[0],tot=n;if(roots.length>1){rt=T(text.split('\n')[0].trim().slice(0,20)||'AI 导图');rt.k=roots;tot++}
-  const cut=j.stop_reason==='max_tokens'||(j.choices&&j.choices[0]&&j.choices[0].finish_reason==='length');
   $('#aiw').hidden=true;aiMake(rt);toast('已生成导图：'+tot+' 个节点'+(cut?'（输出被截断，内容可能不完整）':''))}
  catch(e){if(e.name==='AbortError'){if(why==='timeout')er.textContent='请求超时（3 分钟），可以缩短提纲后重试'}
   else er.textContent=e instanceof TypeError?'请求失败：地址有误、网络不通，或该服务商不允许浏览器直接访问（跨域 CORS）':'失败：'+e.message}
@@ -674,6 +761,22 @@ $('#aipc').onclick=()=>{$('#aipk').hidden=true};
 $('#aipk').addEventListener('click',e=>{if(e.target.id==='aipk')$('#aipk').hidden=true});
 $('#aipm').onclick=()=>{$('#aipk').hidden=true;aiList()};
 $('#aig').onclick=aiList;
+/* 提示词编辑窗口 */
+const prE=$('#aipe'),prSel=$('#aipsel'),prTx=$('#aipt'),prNm=$('#aipn');
+function prFill(){const P=PR(),p=prCur(),d=p.id==='d';prSel.replaceChildren();prAll().forEach(x=>prSel.add(new Option(x.name||'未命名',x.id)));prSel.value=p.id;prTx.value=p.text;prNm.value=d?'':p.name;
+ $('#aipnw').style.display=d?'none':'';$('#aipd').style.display=d?'none':'';$('#aipr2').style.display=d?'':'none';$('#aipr2').disabled=P.dt==null;
+ $('#aipti').textContent='提示词 · '+(aiMode==='s'?'补充到已有导图':'新建导图');
+ $('#aiph').textContent=aiMode==='s'?'输出格式（@备注 / @新增 改动清单）由程序自动附加，这里只写整理要求，留空则用默认。修改会自动保存。':'输出格式（# 根节点 + 缩进列表）由程序自动附加，这里只写风格要求，留空则用默认。修改会自动保存。'}
+function prClose(){prE.hidden=true;aiHead()}
+$('#aipr').onclick=()=>{prFill();prE.hidden=false};
+$('#aipx').onclick=prClose;
+prE.addEventListener('click',e=>{if(e.target===prE)prClose()});
+prSel.onchange=()=>{PR().cur=prSel.value;prSave();prFill()};
+prTx.oninput=()=>{const P=PR(),p=prCur();if(p.id==='d'){P.dt=prTx.value===STY[aiMode]?null:prTx.value;$('#aipr2').disabled=P.dt==null}else{const q=P.list.find(x=>x.id===p.id);if(q)q.text=prTx.value}prSave()};
+prNm.oninput=()=>{const P=PR(),q=P.list.find(x=>x.id===P.cur);if(!q)return;q.name=prNm.value;prSave();const o=prSel.selectedOptions[0];if(o)o.textContent=q.name||'未命名'};
+$('#aipnew').onclick=()=>{const P=PR(),id='p'+nid();P.list.push({id,name:'新预设 '+(P.list.length+1),text:prTx.value});P.cur=id;prSave();prFill();prNm.focus();prNm.select()};
+$('#aipd').onclick=()=>{const P=PR(),q=P.list.find(x=>x.id===P.cur);if(!q||!confirm('删除「'+(q.name||'这个预设')+'」？'))return;P.list=P.list.filter(x=>x!==q);P.cur='d';prSave();prFill()};
+$('#aipr2').onclick=()=>{const P=PR();if(P.dt==null||!confirm('把默认提示词恢复成初始内容？'))return;P.dt=null;prSave();prFill()};
 /* 设置：列表 / 编辑 */
 let aiD=null,aiNew=false,aiMods=[];
 function aiList(){$('#aise').hidden=true;$('#aisl').hidden=false;const box=$('#aill');box.replaceChildren();
