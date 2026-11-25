@@ -18,11 +18,21 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--paper);color:var
 .hit>.lab{background:#fff0a0}
 .now>.lab{outline:3px solid #d33;outline-offset:1px}
 .kids{display:flex;flex-direction:column;gap:6px;margin-left:var(--gap,10px);padding-left:var(--gap,10px)}
-.kids>.n{position:relative}
-.kids>.n::before{content:"";position:absolute;left:calc(-1*var(--gap,10px));top:0;bottom:-6px;width:2px;background:var(--ink)}
-.kids>.n:first-child::before{top:16px}
-.kids>.n:last-child::before{bottom:auto;height:18px}
-.kids>.n:first-child:last-child::before{display:none}
+.tk{position:relative}
+.tk::before{content:"";position:absolute;left:calc(-1*var(--gap,10px));top:0;bottom:-6px;width:2px;background:var(--ink)}
+.tk.tf::before{top:16px}
+.tk.tl::before{bottom:auto;height:18px}
+.tk.tf.tl::before{display:none}
+.grp{display:flex;align-items:center}
+.gr{display:flex;align-self:stretch}
+.gm{display:flex;flex-direction:column;gap:6px}
+.gm>:last-child{flex:1}
+.gb{display:flex;flex-direction:column;width:12px;margin:0 6px 0 4px;color:var(--ink);flex:none}
+.gb svg{display:block;flex:none}
+.gb i{display:block;flex:1;width:6px;border-right:2px solid}
+.gs{flex:none}
+.sm>.lab{border:1.5px dashed var(--ink)}
+#bk{position:fixed;left:8px;top:calc(56px + env(safe-area-inset-top));z-index:5;padding:6px 12px;font:inherit;font-size:16px;color:var(--ink);background:#fffdf3;border:1.5px solid var(--ink);border-radius:10px;max-width:60vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#bk[hidden]{display:none}
 .dim>.lab{opacity:.3}
 .dot{font-style:normal;font-size:14px;min-width:24px;height:24px;line-height:21px;text-align:center;border:1.5px solid var(--ink);border-radius:12px;flex:none}
 .lab.hide{color:transparent;background:#d9d4bf}
@@ -80,7 +90,7 @@ textarea{font:inherit;color:var(--ink);height:140px;border:1.5px solid var(--ink
 #vd{color:#ff9a94!important}
 .nt{font-style:normal;font-size:15px;flex:none;padding:2px 6px;margin:-2px 0;opacity:.85}
 body.lock #bar,body.lock #tl,body.lock #sw,body.lock #sv{pointer-events:none;opacity:.5}
-#fl{position:fixed;z-index:36;width:clamp(300px,48vw,720px);height:clamp(280px,56vh,560px);display:flex;flex-direction:column;background:var(--paper);border:1.5px solid var(--ink);border-radius:12px;box-shadow:0 6px 24px #0005;overflow:hidden}
+#fl{position:fixed;z-index:36;width:var(--flw);height:clamp(280px,56vh,560px);display:flex;flex-direction:column;background:var(--paper);border:1.5px solid var(--ink);border-radius:12px;box-shadow:0 6px 24px #0005;overflow:hidden}
 #fl[hidden]{display:none}
 #flh{flex:none;height:42px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 6px 0 12px;background:#f1ecd6;border-bottom:1px solid #cfc8a8;touch-action:none;cursor:grab}
 #flh b{font-weight:normal;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none}
@@ -160,9 +170,24 @@ body.lock #bar,body.lock #tl,body.lock #sw,body.lock #sv{pointer-events:none;opa
 #aiml button{display:flex;flex-direction:column;align-items:flex-start;text-align:left;width:100%}#aiml button small{font-size:13px;opacity:.7}
 #aiun{position:fixed;right:8px;top:calc(56px + env(safe-area-inset-top));z-index:50;display:flex;align-items:center;gap:10px;max-width:80vw;padding:8px 12px;background:var(--ink);color:#fff;border-radius:10px;font-size:15px}#aiun[hidden]{display:none}
 #aiun span{flex:1}#aiun button{font:inherit;font-size:15px;padding:4px 12px;color:var(--ink);background:#fffdf3;border:0;border-radius:6px;flex:none}
+:root{--flw:clamp(300px,48vw,720px)}
+#ntxt{font-size:18px;line-height:1.6;background-image:linear-gradient(90deg,transparent calc(var(--flw) - 23px),rgba(221,51,51,.5) calc(var(--flw) - 23px),rgba(221,51,51,.5) calc(var(--flw) - 21.5px),transparent calc(var(--flw) - 21.5px));background-attachment:local}
+#ntlk{display:flex;gap:8px;align-items:center;flex:none;overflow-x:auto;touch-action:pan-x}
+#ntlk button{padding:4px 12px;font-size:15px;white-space:nowrap;max-width:60vw;overflow:hidden;text-overflow:ellipsis}
+#nlp{position:fixed;inset:0;background:#0006;display:flex;align-items:center;justify-content:center;z-index:47}#nlp[hidden]{display:none}
+#nlp>div{background:var(--paper);padding:14px;border-radius:12px;width:min(480px,92vw);max-height:78vh;display:flex;flex-direction:column;gap:8px}
+#nlp h3{margin:0;font-weight:normal;font-size:18px}
+#nlq{font:inherit;font-size:16px;color:var(--ink);background:#fff;border:1.5px solid var(--ink);border-radius:8px;padding:6px 8px;-webkit-user-select:text;user-select:text}
+#nll{flex:1;min-height:140px;overflow:auto;display:flex;flex-direction:column;gap:2px}
+#nll button{display:flex;gap:6px;align-items:center;text-align:left;font:inherit;font-size:16px;padding:6px 8px;color:var(--ink);background:#fffdf3;border:1.5px solid transparent;border-radius:8px;width:100%;flex:none}
+#nll button.on{background:#dbe4ff;border-color:var(--ink)}
+#nll button span{flex:1;min-width:0}#nll button small{opacity:.55;flex:none}
+#nll p{margin:8px;opacity:.6}
+#nld{align-self:flex-end;font:inherit;font-size:16px;padding:6px 18px;color:var(--ink);background:#fffdf3;border:1.5px solid var(--ink);border-radius:8px}
 </style></head><body>
 <div id="stage"><div id="world"></div></div>
 <div id="tl"><button id="menu" aria-label="历史导图"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><button id="new" aria-label="新建导图">＋</button><button id="ai" aria-label="AI 提纲转导图">✨</button></div>
+<button id="bk" hidden>↩ 返回</button>
 <button id="sv" aria-label="保存"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v5h7V3M8 21v-7h8v7"/></svg></button><div id="toast"></div>
 <div class="scrim" id="scrim"></div>
 <div id="drawer"><h2><span>历史导图</span><button id="nf">＋文件夹</button></h2><div id="list"></div><p id="hint">点击切换，长按可重命名或删除</p></div>
@@ -207,10 +232,12 @@ body.lock #bar,body.lock #tl,body.lock #sw,body.lock #sv{pointer-events:none;opa
 </div></div>
 <input type="file" id="file" accept=".json" hidden>
 <input type="file" id="ntf" accept="image/*" multiple hidden>
-<div id="nt" hidden><div class="np"><div class="nh"><b id="nttl"></b><button id="ntfs">全屏文字</button><button id="ntx">完成</button></div>
-<div id="ntfmt" style="display:flex;gap:8px;flex:none"><button id="nsup">上标</button><button id="nsub">下标</button><button id="nnor">还原</button></div>
+<div id="nt" hidden><div class="np"><div class="nh"><b id="nttl"></b><button id="ntml" hidden>🔗</button><button id="ntfs">全屏文字</button><button id="ntx">完成</button></div>
+<div id="ntfmt" style="display:flex;gap:8px;flex:none"><button id="nsup">上标</button><button id="nsub">下标</button><button id="nnor">还原</button><button id="nmk">标记</button></div>
+<div id="ntlk"></div>
 <textarea id="ntxt" placeholder="备注…"></textarea>
 <button id="ntadd">＋ 添加图片（也可粘贴）</button><div id="ntg"></div></div></div>
+<div id="nlp" hidden><div><h3>链接备注（点选 / 再点取消）</h3><input id="nlq" type="text" placeholder="搜索节点标题或备注…" autocomplete="off" spellcheck="false"><div id="nll"></div><button id="nld">完成</button></div></div>
 <div id="ask" hidden><div><p id="askt"></p><small>压缩：最长边缩到 1600px，通常每张 100~300KB。<br>保留原图：占用空间大，图多时保存和导出会变慢。</small><button id="aky">压缩（推荐）</button><button id="akn">保留原图</button><button id="akc">取消</button></div></div>
 <div id="fl" hidden><div id="flh"><b id="flt"></b><button id="flx" aria-label="关闭">×</button></div><div id="fltx"></div><div id="flim"><img id="fli"><button id="flz"></button><button id="flp">‹</button><button id="fln">›</button><span id="flc"></span></div></div>
 <div id="vw" hidden><img id="vi"><div class="vb"><button id="vc">关闭</button><button id="vd">删除</button></div></div>
@@ -264,10 +291,21 @@ function build(n,rel){
  if(n.note||(n.imgs&&n.imgs.length)){const t=document.createElement('i');t.className='nt';t.textContent='✎';l.append(t)}
  if(!leaf){const d=document.createElement('i');d.className='dot';d.textContent=col?'+'+cnt(n):'−';l.append(d)}
  e.append(l);
- if(!leaf&&!col){const k=document.createElement('div');k.className='kids';n.k.forEach(c=>k.append(build(c,rel)));e.append(k)}
+ if(!leaf&&!col){const k=document.createElement('div');k.className='kids';k.append(...kidEls(n.k,rel));e.append(k)}
  return e}
 const apply=()=>W.style.transform=`translate(${V.x}px,${V.y}px) scale(${V.k})`;
-function render(){if(sel&&!find(sel))sel=null;W.replaceChildren(build(root,sel?relset():null));const mb=$('[data-a=mask]');if(mb)mb.textContent=mask?'取消遮挡':'遮挡';const bb=$('[data-a=box]');if(bb)bb.textContent=boxMode?'退出框选':'框选';const lb=$('[data-a=link]');if(lb)lb.textContent=cnMode?'退出连接':'连接';const kb=$('[data-a=mark]');if(kb)kb.textContent=mkMode?'退出上色':'标记';apply();drawLinks();listRender()}
+/* v3.2.4：大括号概要（概要是父节点里紧跟在被括节点后面的普通子节点，用 br 记下被括节点的 id） */
+const BR_T='<svg width="12" height="10" viewBox="0 0 12 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M0 1Q5 1 5 10"/></svg>',BR_M='<svg width="12" height="16" viewBox="0 0 12 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 0Q5 8 12 8Q5 8 5 16"/></svg>',BR_B='<svg width="12" height="10" viewBox="0 0 12 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 0Q5 9 0 9"/></svg>';
+function normBr(n){const a=n.k;if(a.length){const ix=new Map(a.map((c,i)=>[c.id,i]));a.forEach((s,j)=>{if(!s.br)return;let f=-1;for(const id of s.br){const i=ix.get(id);if(i!==undefined&&i<j&&(f<0||i<f))f=i}if(f<0){delete s.br;return}const l=a.slice(f,j).map(c=>c.id);if(s.br.length!==l.length||s.br.some((x,k)=>x!==l[k]))s.br=l})}n.k.forEach(normBr)}
+function grpEl(mem,sm){const g=document.createElement('div'),r=document.createElement('div'),m=document.createElement('div'),b=document.createElement('div'),s=document.createElement('div');g.className='grp';r.className='gr';m.className='gm';b.className='gb';s.className='gs';
+ m.append(...mem);b.innerHTML=BR_T+'<i></i>'+BR_M+'<i></i>'+BR_B;r.append(m,b);sm.classList.add('sm');s.append(sm);g.append(r,s);return g}
+function kidEls(a,rel){const ix=new Map(a.map((c,i)=>[c.id,i])),gr=[];
+ a.forEach((s,j)=>{if(s.br&&s.br.length){const f=ix.get(s.br[0]);if(f!==undefined&&f<j&&ix.get(s.br[s.br.length-1])===j-1)gr.push({f,j})}});
+ const go=(lo,hi)=>{const out=[];let i=lo;while(i<=hi){let best=-1;for(const g of gr)if(g.f===i&&g.j<=hi&&g.j>best)best=g.j;
+   if(best>0){out.push(grpEl(go(i,best-1),build(a[best],rel)));i=best+1}else{const e=build(a[i],rel);e.classList.add('tk');out.push(e);i++}}return out};
+ const out=go(0,a.length-1),edge=(el,first)=>{while(el.classList.contains('grp')){const gm=el.querySelector(':scope>.gr>.gm');el=first?gm.firstElementChild:gm.lastElementChild}return el};
+ if(out.length){edge(out[0],true).classList.add('tf');edge(out[out.length-1],false).classList.add('tl')}return out}
+function render(){if(sel&&!find(sel))sel=null;normBr(root);W.replaceChildren(build(root,sel?relset():null));const mb=$('[data-a=mask]');if(mb)mb.textContent=mask?'取消遮挡':'遮挡';const bb=$('[data-a=box]');if(bb)bb.textContent=boxMode?'退出框选':'框选';const lb=$('[data-a=link]');if(lb)lb.textContent=cnMode?'退出连接':'连接';const kb=$('[data-a=mark]');if(kb)kb.textContent=mkMode?'退出上色':'标记';const rb=$('[data-a=brace]');if(rb)rb.textContent=boxMode?'确认括起':'括起';apply();drawLinks();listRender()}
 function fit(){const sw=S.clientWidth,sh=S.clientHeight,w=W.offsetWidth,h=W.offsetHeight,k=Math.min(1,sw/w,sh/h);V={k,x:0,y:0};apply()}
 function edit(){const r=find(sel);if(!r)return;const t=$('#dlg textarea');t.value=r.n.t;$('#fmt').style.display='';D.hidden=false;t.focus();t.select()}
 $('#ok').onclick=()=>{const v=$('#dlg textarea').value;D.hidden=true;
@@ -408,17 +446,18 @@ $('#qx').onclick=()=>{$('#q').value='';doSearch()};
 const MC=[null,'#d33','#e08a00','#2e9e4f','#7a3fb5'],MN=['无','重点','易错','绿','紫'],PAL=$('#pal');
 MC.forEach((c,i)=>{const b=document.createElement('button');b.title=MN[i];if(c)b.style.background=c;else b.textContent='×';
  b.onclick=()=>{
+ if(ntId&&!$('#nt').hidden){const r=find(ntId);if(r){if(!i||r.n.m===i)delete r.n.m;else r.n.m=i;save();render();ntMk()}PAL.hidden=true;return}
  if(MS.size){PAL.hidden=true;mut(()=>{MS.forEach(id=>{const r=find(id);if(r){if(i)r.n.m=i;else delete r.n.m}})});return}
  if(sel&&find(sel)){PAL.hidden=true;const r=find(sel);mut(()=>{if(!i||r.n.m===i)delete r.n.m;else r.n.m=i});return}
  mkSty=i;mkMode=true;cnMode=false;cnA=null;PAL.hidden=!mkMode;[...PAL.children].forEach((x,j)=>x.style.outline=mkMode&&j===i?'3px solid #333':'');toast(mkMode?'批量上色：点节点上色，再点去除':'点击一个节点上色');render()};PAL.append(b)});
-document.addEventListener('pointerdown',e=>{if(!PAL.hidden&&!PAL.contains(e.target)&&e.target.dataset.a!=='mark'&&!mkMode)PAL.hidden=true},true);
+document.addEventListener('pointerdown',e=>{if(!PAL.hidden&&!PAL.contains(e.target)&&e.target.dataset.a!=='mark'&&e.target.id!=='nmk'&&!mkMode)PAL.hidden=true},true);
 /* 导出缩进文本 */
 function dl(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click()}
 /* 工具栏自定义 */
-const REG=[['child','子级'],['sib','同级'],['edit','编辑'],['del','删除'],['up','上移'],['down','下移'],['out','升级'],['mark','标记'],['box','框选'],['link','连接'],['copy','复制'],['paste','粘贴'],['keytest','按键测试'],['note','备注'],['undo','撤销'],['redo','重做'],['mask','遮挡'],['fit','适应'],['fsm','A−','字号减小'],['fsp','A+','字号增大'],['gm','层距−','层距减小'],['gp','层距+','层距增大'],['file','换文件'],['export','导出','导出 JSON'],['text','导出文本','导出缩进文本'],['import','导入'],['cfg','自定义']].map(x=>({a:x[0],l:x[1],n:x[2]||x[1]}));
+const REG=[['child','子级'],['sib','同级'],['edit','编辑'],['del','删除'],['up','上移'],['down','下移'],['out','升级'],['mark','标记'],['box','框选'],['link','连接'],['brace','括起'],['unbrace','拆括号'],['copy','复制'],['paste','粘贴'],['keytest','按键测试'],['note','备注'],['undo','撤销'],['redo','重做'],['mask','遮挡'],['fit','适应'],['fsm','A−','字号减小'],['fsp','A+','字号增大'],['gm','层距−','层距减小'],['gp','层距+','层距增大'],['file','换文件'],['export','导出','导出 JSON'],['text','导出文本','导出缩进文本'],['import','导入'],['cfg','自定义']].map(x=>({a:x[0],l:x[1],n:x[2]||x[1]}));
 let BC=[];try{BC=JSON.parse(localStorage.getItem('mmbar'))||[]}catch(e){}
 function normBC(){const seen=new Set();BC=BC.filter(x=>REG.some(r=>r.a===x.a)&&!seen.has(x.a)&&seen.add(x.a));REG.forEach(r=>{if(!seen.has(r.a)){const it={a:r.a,s:1},ci=BC.findIndex(x=>x.a==='cfg');ci>=0?BC.splice(ci,0,it):BC.push(it)}});BC.forEach(x=>{if(x.a==='cfg')x.s=1})}
-function buildBar(){$('#bar').replaceChildren(...BC.filter(x=>x.s).map(x=>{const r=REG.find(r=>r.a===x.a),b=document.createElement('button');b.dataset.a=x.a;b.textContent=x.a==='mask'&&mask?'取消遮挡':x.a==='box'&&boxMode?'退出框选':x.a==='link'&&cnMode?'退出连接':r.l;return b}))}
+function buildBar(){$('#bar').replaceChildren(...BC.filter(x=>x.s).map(x=>{const r=REG.find(r=>r.a===x.a),b=document.createElement('button');b.dataset.a=x.a;b.textContent=x.a==='mask'&&mask?'取消遮挡':x.a==='box'&&boxMode?'退出框选':x.a==='link'&&cnMode?'退出连接':x.a==='brace'&&boxMode?'确认括起':r.l;return b}))}
 function saveBC(){try{localStorage.setItem('mmbar',JSON.stringify(BC))}catch(e){}buildBar()}
 function cfgRender(){$('#cl').replaceChildren(...BC.map((x,i)=>{const r=REG.find(r=>r.a===x.a),d=document.createElement('div');d.className='row';
  const c=document.createElement('input');c.type='checkbox';c.checked=!!x.s;c.disabled=x.a==='cfg';c.onchange=()=>{x.s=c.checked?1:0;saveBC()};
@@ -456,7 +495,7 @@ function delMS(){const ids=new Set(MS);ids.delete(root.id);if(!ids.size){MS.clea
  if(!confirm('删除选中的 '+rem.size+' 个节点（含其子节点）？'))return;
  mut(()=>{const pr=n=>{n.k=n.k.filter(c=>!ids.has(c.id));n.k.forEach(pr)};pr(root);MS.clear();sel=null})}
 function forest(){const out=[],w=(n,par)=>{let p=par;if(MS.has(n.id)){const c={id:nid(),t:n.t,k:[],c:false};if(n.m)c.m=n.m;if(n.note)c.note=n.note;if(n.imgs)c.imgs=n.imgs.slice();(par?par.k:out).push(c);p=c}n.k.forEach(x=>w(x,p))};w(root,null);return out}
-const reId=x=>{x.id=nid();x.k.forEach(reId)};
+const reId=x=>{const m={},a=n=>{const o=n.id;n.id=nid();m[o]=n.id;delete n.rl;n.k.forEach(a)},b=n=>{if(n.br){n.br=n.br.map(i=>m[i]).filter(Boolean);if(!n.br.length)delete n.br}n.k.forEach(b)};a(x);b(x)};
 function ftxt(f){const o=[],w=(n,d)=>{o.push('\t'.repeat(d)+(n.t||'').replace(/\s*\n\s*/g,' '));n.k.forEach(c=>w(c,d+1))};f.forEach(n=>w(n,0));return o.join('\n')}
 /* 标记 */
 function markTap(id){const r=find(id);if(!r)return;mut(()=>{if(mkSty===0||r.n.m===mkSty)delete r.n.m;else r.n.m=mkSty});if(!mkMode){mkSty=null;[...PAL.children].forEach(x=>x.style.outline='')}}
@@ -478,6 +517,20 @@ function drawLinks(){const o=W.querySelector('#lk');if(o)o.remove();const ln=roo
  W.prepend(svg)}
 Object.assign(A,{
  box(){setBox(!boxMode)},
+ brace(){
+  if(!boxMode){setBox(true);toast('框选同一父节点下的节点，选好后再点「确认括起」');return}
+  const ids=[...MS].filter(id=>id!==root.id);if(!ids.length){toast('先框选要括起来的节点');return}
+  const rs=ids.map(id=>find(id)).filter(Boolean),p=rs[0]&&rs[0].p;
+  if(!p||rs.some(r=>r.p!==p)){toast('只能括起同一个父节点下的同级节点');return}
+  const a=p.k,lo=Math.min(...rs.map(r=>r.i)),hi=Math.max(...rs.map(r=>r.i)),ix=new Map(a.map((c,i)=>[c.id,i])),encl=[];
+  for(let j=0;j<a.length;j++){const g=a[j];if(!g.br||!g.br.length)continue;const ga=ix.get(g.br[0]);if(ga===undefined)continue;
+   if(hi<ga||lo>j)continue;if(lo<=ga&&hi>=j)continue;if(lo>=ga&&hi<=j-1){encl.push(g);continue}toast('括号不能和已有的括号交叉');return}
+  mut(()=>{const sm={id:nid(),t:'概要',k:[],c:false,br:a.slice(lo,hi+1).map(c=>c.id)},after=a[hi].id;
+   encl.forEach(g=>{const k=g.br.indexOf(after);g.br.splice(k+1,0,sm.id)});a.splice(hi+1,0,sm);sel=sm.id;MS=new Set();boxMode=false;S.style.cursor=''});
+  edit()},
+ unbrace(){const r=find(sel);if(!r||!r.p){toast('先选中概要节点，或括号里的节点');return}
+  let g=null;if(r.n.br&&r.n.br.length)g=r.n;else r.p.k.forEach(x=>{if(x.br&&x.br.includes(r.n.id)&&(!g||x.br.length<g.br.length))g=x});
+  if(!g){toast('这个节点不在括号里');return}mut(()=>{delete g.br});toast('已拆掉括号，概要变成普通节点')},
  link(){cnMode=!cnMode;cnA=null;cnP=null;if(cnMode){boxMode=false;MS=new Set();mkSty=null;mkMode=false;PAL.hidden=true;S.style.cursor=''}toast(cnMode?'连线：依次点两个节点，再连一次取消':'已退出连接');render()},
  mark(){if(mkMode||mkSty!==null){mkMode=false;mkSty=null;PAL.hidden=true;[...PAL.children].forEach(x=>x.style.outline='');toast('已退出上色');render();return}PAL.hidden=!PAL.hidden},
  copy(){let f;if(MS.size)f=forest();else{const r=find(sel);if(!r){toast('先选中节点');return}f=[JSON.parse(JSON.stringify(r.n))];f.forEach(reId)}
@@ -517,10 +570,10 @@ async function makeImg(f,zip){const bm=await decodeImg(f),w=bm.width||bm.natural
  if(zip){const c=await toBlob(bm,w,h,1600,.8);if(c&&c.size<f.size)b=c}
  if(bm.close)bm.close();return{b,t}}
 const askC=n=>new Promise(res=>{$('#askt').textContent='插入 '+n+' 张图片，是否压缩？';$('#ask').hidden=false;const done=v=>{$('#ask').hidden=true;res(v)};$('#aky').onclick=()=>done('y');$('#akn').onclick=()=>done('n');$('#akc').onclick=()=>done(null)});
-let ntId=null,ntSnap='',ntOld='',ntUrls=[],ntt=0;
-function openNote(id){const r=find(id);if(!r)return;ntId=id;ntSnap=JSON.stringify(root);ntOld=r.n.note||'';$('#nttl').textContent=(r.n.t||'').split('\n')[0]||'备注';$('#ntxt').value=ntOld;$('#nt').hidden=false;ntFs(false);ntGrid()}
-function closeNote(){if(!ntId)return;if(!$('#vw').hidden)closeViewer();clearTimeout(ntt);const r=find(ntId);
- if(r&&(r.n.note||'')!==ntOld){hist.push(ntSnap);if(hist.length>100)hist.shift();redo=[]}
+let ntId=null,ntSnap='',ntOld='',ntM=0,ntL='',ntUrls=[],ntt=0;
+function openNote(id){const r=find(id);if(!r)return;ntId=id;ntSnap=JSON.stringify(root);ntOld=r.n.note||'';ntM=r.n.m||0;ntLinks(r);ntL=ntLs(r.n);$('#nttl').textContent=(r.n.t||'').split('\n')[0]||'备注';$('#ntxt').value=ntOld;$('#nt').hidden=false;ntFs(false);ntMk();ntLk();ntGrid()}
+function closeNote(){if(!ntId)return;$('#nlp').hidden=true;PAL.hidden=true;PAL.style.cssText='';if(!$('#vw').hidden)closeViewer();clearTimeout(ntt);const r=find(ntId);
+ if(r&&((r.n.note||'')!==ntOld||(r.n.m||0)!==ntM||ntLs(r.n)!==ntL)){hist.push(ntSnap);if(hist.length>100)hist.shift();redo=[]}
  save();ntUrls.forEach(u=>URL.revokeObjectURL(u));ntUrls=[];$('#ntg').replaceChildren();$('#nt').hidden=true;ntFs(false);ntId=null;render()}
 async function ntGrid(){const g=$('#ntg');ntUrls.forEach(u=>URL.revokeObjectURL(u));ntUrls=[];g.replaceChildren();const r=find(ntId);if(!r)return;const my=ntId;
  for(const [ix,id] of (r.n.imgs||[]).entries()){const th=document.createElement('div'),im=document.createElement('img'),bd=document.createElement('b');th.className='th';th.dataset.id=id;bd.textContent=ix+1;th.append(im,bd);g.append(th);
@@ -549,6 +602,42 @@ $('#ntxt').addEventListener('input',()=>{const r=find(ntId);if(!r)return;const v
 function ntFs(on){$('#nt').classList.toggle('fs',on);$('#ntfs').textContent=on?'退出全屏':'全屏文字'}
 $('#ntfs').onclick=()=>ntFs(!$('#nt').classList.contains('fs'));
 $('#ntx').onclick=closeNote;
+/* v3.2.2：备注↔备注链接 */
+const mlsOf=n=>(Array.isArray(n.ml)?n.ml:n.ml?[n.ml]:[]).slice(),mlOk=n=>mlsOf(n).filter(id=>id!==cm.id&&DB.maps.some(m=>m.id===id));
+const ntLs=n=>JSON.stringify([n.rl||[],n.ml||'']);
+const ttl1=n=>(n.t||'').split('\n')[0]||'（无标题）';
+function ntLinks(r){const o=r.n.rl||[],a=o.filter(id=>find(id));if(a.length!==o.length){if(a.length)r.n.rl=a;else delete r.n.rl}return a}
+function ntLk(){const box=$('#ntlk'),r=find(ntId);box.replaceChildren();if(!r)return;
+ const add=document.createElement('button');add.textContent='＋链接';add.onclick=()=>nlOpen('n');box.append(add);
+ const ma=mlOk(r.n),mm=ma.length?DB.maps.find(x=>x.id===ma[0]):null,bm=document.createElement('button');bm.textContent=ma.length>1?'🗺 '+ma.length+' 张导图':mm?'🗺 '+nm(mm):'＋导图';bm.onclick=()=>nlOpen('m');box.append(bm);ntMl();
+ ntLinks(r).forEach(id=>{const x=find(id),b=document.createElement('button');b.textContent='🔗 '+ttl1(x.n);b.onclick=()=>openFloatLeft(id);box.append(b)})}
+let flSaved=null,flLeftOpen=false;
+function openFloatLeft(id){const r=find(id);if(!r)return;if(!r.n.note&&!(r.n.imgs&&r.n.imgs.length)){toast('「'+ttl1(r.n)+'」还没有备注');return}
+ if(FL.hidden){flSaved=flPos;flLeftOpen=true;flPos={x:12,y:64}}
+ FL.style.zIndex=$('#nt').hidden?'':'44';openFloat(id)}
+let nlMode='n';
+function ntMl(){const r=find(ntId),b=$('#ntml'),a=r?mlOk(r.n):[];b.hidden=!a.length;b.title=a.length===1?nm(DB.maps.find(x=>x.id===a[0])):a.length+' 张导图'}
+let BK=[];
+function updBk(){while(BK.length&&!DB.maps.some(x=>x.id===BK[BK.length-1].m))BK.pop();const b=$('#bk'),e=BK[BK.length-1],m=e&&DB.maps.find(x=>x.id===e.m);b.hidden=!m;if(m)b.textContent='↩ 返回「'+nm(m)+'」'}
+function jumpMap(mid){const m=DB.maps.find(x=>x.id===mid);if(!m||!ntId)return;if(!confirm('是否确认跳转到「'+nm(m)+'」？'))return;BK.push({m:cm.id,n:ntId});closeNote();if(!FL.hidden)closeFloat();switchTo(m.id);updBk()}
+$('#ntml').onclick=()=>{const r=find(ntId),a=r?mlOk(r.n):[];if(!a.length)return;if(a.length===1)jumpMap(a[0]);else nlOpen('j')};
+$('#bk').onclick=()=>{updBk();const e=BK.pop();if(!e)return;const m=DB.maps.find(x=>x.id===e.m);if(!m){updBk();return}switchTo(m.id);if(find(e.n)){sel=e.n;render();openNote(e.n)}updBk()};
+function nlOpen(mode){nlMode=mode||'n';if(!find(ntId))return;$('#nlp').querySelector('h3').textContent=nlMode==='j'?'跳转到哪一张导图？':nlMode==='m'?'链接到导图（可多选，点选 / 再点取消）':'链接备注（点选 / 再点取消）';$('#nlq').placeholder=nlMode!=='n'?'搜索导图…':'搜索节点标题或备注…';$('#nlq').value='';nlRender();$('#nll').scrollTop=0;$('#nlp').hidden=false}
+function nlRender(){const r=find(ntId);if(!r)return;
+ if(nlMode==='m'||nlMode==='j'){const cur=mlsOf(r.n),q=$('#nlq').value.trim().toLowerCase(),out=[],box=$('#nll');DB.maps.forEach(m=>{if(m===cm||(nlMode==='j'&&!cur.includes(m.id))||(q&&!nm(m).toLowerCase().includes(q)))return;const on=cur.includes(m.id),b=document.createElement('button'),s=document.createElement('span');b.dataset.id=m.id;if(on)b.className='on';s.textContent=(on?'✓ ':'')+nm(m);b.append(s);out.push(b)});
+  if(!out.length){const p=document.createElement('p');p.textContent='没有可链接的导图';out.push(p)}box.replaceChildren(...out);return}const q=$('#nlq').value.trim().toLowerCase(),L=new Set(r.n.rl||[]),out=[],box=$('#nll'),st=box.scrollTop;
+ const w=(n,d)=>{if(n.id!==ntId&&(!q||((n.t||'')+'\n'+(n.note||'')).toLowerCase().includes(q))){const b=document.createElement('button'),s=document.createElement('span'),m=document.createElement('small');
+  b.dataset.id=n.id;if(L.has(n.id))b.className='on';s.textContent=(L.has(n.id)?'✓ ':'')+ttl1(n);b.style.paddingLeft=(8+(q?0:Math.min(d,8)*14))+'px';m.textContent=n.note?'✎':'';b.append(s,m);out.push(b)}n.k.forEach(c=>w(c,d+1))};
+ w(root,0);if(!out.length){const p=document.createElement('p');p.textContent='没有匹配的节点';out.push(p)}box.replaceChildren(...out);box.scrollTop=st}
+$('#nlq').oninput=nlRender;$('#nld').onclick=()=>{$('#nlp').hidden=true};$('#nlp').addEventListener('pointerdown',e=>{if(e.target===$('#nlp'))$('#nlp').hidden=true});
+$('#nll').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+ if(nlMode==='j'){$('#nlp').hidden=true;jumpMap(b.dataset.id);return}
+ if(nlMode==='m'){const r=find(ntId);if(!r)return;const a=mlOk(r.n),id=b.dataset.id,k=a.indexOf(id);if(k>=0)a.splice(k,1);else a.push(id);if(a.length)r.n.ml=a;else delete r.n.ml;save();nlRender();ntLk();return}
+ const r=find(ntId),o=find(b.dataset.id);if(!r||!o)return;const has=(r.n.rl||[]).includes(o.n.id);
+ const tog=(x,id,on)=>{const a=(x.rl||[]).filter(i=>i!==id);if(on)a.push(id);if(a.length)x.rl=a;else delete x.rl};
+ tog(r.n,o.n.id,!has);tog(o.n,r.n.id,!has);save();nlRender();ntLk()};
+function ntMk(){const r=find(ntId),b=$('#nmk');if(!r||!b)return;const c=MC[r.n.m||0];b.style.boxShadow=c?'inset 8px 0 0 '+c:''}
+$('#nmk').onclick=()=>{if(!find(ntId))return;if(!PAL.hidden){PAL.hidden=true;return}const r=$('#nmk').getBoundingClientRect();PAL.style.cssText='z-index:43;left:12px;top:'+(r.bottom+6)+'px;bottom:auto';PAL.hidden=false};
 $('#ntadd').onclick=()=>$('#ntf').click();
 $('#ntf').onchange=e=>{const fs=[...e.target.files];e.target.value='';if(fs.length)addImgs(fs)};
 document.addEventListener('paste',e=>{if($('#nt').hidden)return;const fs=[...(e.clipboardData&&e.clipboardData.files||[])].filter(f=>f.type.startsWith('image/'));if(fs.length){e.preventDefault();addImgs(fs)}});
@@ -587,8 +676,9 @@ $('#file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)
   if(o.maps&&o.maps.length){
    (o.folders||[]).forEach(f=>{if(!DB.folders.some(x=>x.id===f.id))DB.folders.push(f)});const dup=o.maps.filter(m=>DB.maps.some(x=>x.id===m.id));let over=true;
    if(dup.length)over=confirm('有 '+dup.length+' 张导图与现有的重复。\n确定：覆盖；取消：作为副本导入');
-   let tgt=null;
-   o.maps.forEach((m,j)=>{const orig=m.id,i=DB.maps.findIndex(x=>x.id===m.id);if(i<0)DB.maps.push(m);else if(over)DB.maps[i]=m;else{m.id=nid();DB.maps.push(m)}if(tgt===null||orig===o.cur)tgt=m.id});
+   let tgt=null;const idm={};
+   o.maps.forEach((m,j)=>{const orig=m.id,i=DB.maps.findIndex(x=>x.id===m.id);if(i<0)DB.maps.push(m);else if(over)DB.maps[i]=m;else{m.id=nid();DB.maps.push(m)}if(tgt===null||orig===o.cur)tgt=m.id;if(m.id!==orig)idm[orig]=m.id});
+   if(Object.keys(idm).length)o.maps.forEach(m=>{const w=n=>{if(n.ml){const arr=Array.isArray(n.ml),a=[].concat(n.ml).map(i=>idm[i]||i);n.ml=arr?a:a[0]}n.k.forEach(w)};w(m.root)});
    switchTo(tgt);return}
   if(!o.k)throw 0;const m=mk('');m.root=o;DB.maps.push(m);switchTo(m.id)}catch(err){alert('文件格式不对')}};
 if(DBOK)setTimeout(async()=>{try{const used=new Set(imgIds(DB.maps));for(const k of await iop('keys'))if(!used.has(k))await iop('del',k)}catch(e){}},3000);
@@ -631,7 +721,7 @@ async function flShow(){if(!flImgs.length)return;const id=flImgs[flI],tok=++flTo
  if(flUrl){URL.revokeObjectURL(flUrl);flUrl=null}
  FZ.reset();if(!rec){$('#fli').removeAttribute('src');$('#flc').textContent='图片丢失 '+(flI+1)+'/'+flImgs.length;return}
  flUrl=URL.createObjectURL(rec.b);$('#fli').src=flUrl}
-function closeFloat(){FL.hidden=true;document.body.classList.remove('lock');flId=null;flTok++;$('#fli').removeAttribute('src');if(flUrl){URL.revokeObjectURL(flUrl);flUrl=null}}
+function closeFloat(){FL.hidden=true;FL.style.zIndex='';if(flLeftOpen){flPos=flSaved;flLeftOpen=false}document.body.classList.remove('lock');flId=null;flTok++;$('#fli').removeAttribute('src');if(flUrl){URL.revokeObjectURL(flUrl);flUrl=null}}
 $('#flx').onclick=closeFloat;
 $('#flz').onclick=()=>{flBig=!flBig;flSetBig()};
 $('#flp').onclick=()=>{flI=(flI-1+flImgs.length)%flImgs.length;flShow()};
