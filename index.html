@@ -179,6 +179,7 @@ body.lock #bar,body.lock #tl,body.lock #sw,body.lock #sv{pointer-events:none;opa
 #aiun span{flex:1}#aiun button{font:inherit;font-size:15px;padding:4px 12px;color:var(--ink);background:#fffdf3;border:0;border-radius:6px;flex:none}
 :root{--flw:clamp(300px,48vw,720px)}
 #ntxt{font-size:18px;line-height:1.6;background-image:linear-gradient(90deg,transparent calc(var(--flw) - 23px),rgba(221,51,51,.5) calc(var(--flw) - 23px),rgba(221,51,51,.5) calc(var(--flw) - 21.5px),transparent calc(var(--flw) - 21.5px));background-attachment:local}
+#ntlk:empty{display:none}
 #ntlk{display:flex;gap:8px;align-items:center;flex:none;overflow-x:auto;touch-action:pan-x}
 #ntlk button{padding:4px 12px;font-size:15px;white-space:nowrap;max-width:60vw;overflow:hidden;text-overflow:ellipsis}
 #nlp{position:fixed;inset:0;background:#0006;display:flex;align-items:center;justify-content:center;z-index:47}#nlp[hidden]{display:none}
@@ -306,6 +307,7 @@ function build(n,rel){
  if(!leaf&&!col){const k=document.createElement('div');k.className='kids';k.append(...kidEls(n.k,rel));e.append(k)}
  return e}
 const apply=()=>W.style.transform=`translate(${V.x}px,${V.y}px) scale(${V.k})`;
+/* v3.2.8：备注页不再显示链接图标和导图名 */
 /* v3.2.7：工具栏「链接」（点节点1→节点2，单向）、「导图」；节点下方显示链接标签 */
 /* v3.2.6：括起时自动上提到最近公共祖先下的同级子节点 */
 /* v3.2.4：大括号概要（概要是父节点里紧跟在被括节点后面的普通子节点，用 br 记下被括节点的 id） */
@@ -631,16 +633,13 @@ const mlsOf=n=>(Array.isArray(n.ml)?n.ml:n.ml?[n.ml]:[]).slice(),mlOk=n=>mlsOf(n
 const ntLs=n=>JSON.stringify([n.rl||[],n.ml||'']);
 const ttl1=n=>(n.t||'').split('\n')[0]||'（无标题）';
 function ntLinks(r){const o=r.n.rl||[],a=o.filter(id=>find(id));if(a.length!==o.length){if(a.length)r.n.rl=a;else delete r.n.rl}return a}
-function ntLk(){const box=$('#ntlk'),r=find(ntId);box.replaceChildren();if(!r)return;
- 
- const ma=mlOk(r.n),mm=ma.length?DB.maps.find(x=>x.id===ma[0]):null,bm=document.createElement('button');bm.textContent=ma.length>1?'🗺 '+ma.length+' 张导图':mm?'🗺 '+nm(mm):'＋导图';bm.onclick=()=>nlOpen('m');if(ma.length)box.append(bm);ntMl();
- ntLinks(r).forEach(id=>{const x=find(id),b=document.createElement('button');b.textContent='🔗 '+ttl1(x.n);b.onclick=()=>openFloatLeft(id);box.append(b)})}
+function ntLk(){$('#ntlk').replaceChildren();ntMl()}
 let flSaved=null,flLeftOpen=false;
 function openFloatLeft(id){const r=find(id);if(!r)return;if(!r.n.note&&!(r.n.imgs&&r.n.imgs.length)){toast('「'+ttl1(r.n)+'」还没有备注');return}
  if(FL.hidden){flSaved=flPos;flLeftOpen=true;flPos={x:12,y:64}}
  FL.style.zIndex=$('#nt').hidden?'':'44';openFloat(id)}
 let nlMode='n';
-function ntMl(){const r=find(ntId),b=$('#ntml'),a=r?mlOk(r.n):[];b.hidden=!a.length;b.title=a.length===1?nm(DB.maps.find(x=>x.id===a[0])):a.length+' 张导图'}
+function ntMl(){$('#ntml').hidden=true}
 let BK=[];
 function updBk(){while(BK.length&&!DB.maps.some(x=>x.id===BK[BK.length-1].m))BK.pop();const b=$('#bk'),e=BK[BK.length-1],m=e&&DB.maps.find(x=>x.id===e.m);b.hidden=!m;if(m)b.textContent='↩ 返回「'+nm(m)+'」'}
 function jumpMap(mid){const m=DB.maps.find(x=>x.id===mid);if(!m||!ntId)return;if(!confirm('是否确认跳转到「'+nm(m)+'」？'))return;BK.push({m:cm.id,n:ntId});closeNote();if(!FL.hidden)closeFloat();switchTo(m.id);updBk()}
